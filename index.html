@@ -85,20 +85,78 @@ svg.append("path")
   .attr("class", "graticule")
   .attr("d", path);
 
-d3.json("world-countries.json", function(collection) {
 
-	var groupFeatures = svg.append("svg:g"); 	
-	feature = groupFeatures.selectAll("path")
-		.data(collection.features)
-		.enter().append("svg:path")
-		.attr("d", path)
-		.attr("class", "boundary")
-		.attr("id", function(d){ return d.id; })
-		.attr("title", function(d){ return d.properties.name; })
-		.style("fill", "#eee");	
+var religionDominante = [];
 
-}); // fin du world-countries.json
 
+queue().defer(d3.csv, "WRPstate2010.csv", function(d, i){ traiterReligions(d, i); })
+	.defer(d3.csv, "COWstate.csv", function(d){ traiterNoms(d); })
+	.await(ready);
+
+
+
+
+
+
+function traiterReligions(d, i) {
+		
+	var selection = [
+		[ d.chrstgenpct, "Christianity", "hsl(0, 50%, 50%)" ], 
+		[ d.judgenpct, "Juif", "hsl(40, 50%, 50%)" ],
+		[ d.islmgenpct, "Islam", "hsl(80, 50%, 50%)" ],
+		[ d.budgenpct, "Bouddhism", "hsl(120, 50%, 50%)" ],
+		[ d.hindgenpct, "Hindou", "hsl(160, 50%, 50%)" ]
+		];
+
+	var max = 0;
+	var index = 0;
+	selection.forEach(function(selec, j){
+		if(selec[0] > max){ max = selec[0]; index = j; }
+	});
+	religionDominante[i] = [d.state, selection[index][1], selection[index][2] ];
+
+} 
+
+
+
+
+function traiterNoms(d) {
+
+	religionDominante.forEach(function(r, i){
+		if(r[0] == d.id){ religionDominante[i][0] = d.name; }		
+	});	
+
+} 
+
+
+
+
+function ready()
+{
+
+	d3.json("world-countries.json", function(collection) {
+
+		var groupFeatures = svg.append("svg:g"); 	
+		feature = groupFeatures.selectAll("path")
+			.data(collection.features)
+			.enter().append("svg:path")
+			.attr("d", path)
+			.attr("class", "boundary")
+			.attr("id", function(d){ return d.id; })
+			.attr("title", function(d){ return d.properties.name; })
+			.style("fill", function(d){ 
+				var couleur = "#ccc";
+				religionDominante.forEach(function(r){
+					if(d.properties.name == r[0]){ 
+						couleur = r[2]; 
+					}		
+				});	
+				return couleur;	
+			});	
+
+	}); // fin du world-countries.json
+
+}
 
 
 </script>
