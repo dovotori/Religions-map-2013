@@ -1,41 +1,49 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
+<html>
 <head>
+	<meta charset="utf-8">
 	<title>Religions index map 2013</title>
 	<style>
 
 	body {
-	  background: #fff;
+		background: #fff;
 	}
 	
 	svg {
-		background: #eee;
+		background: #fff;
 	}
 
 	.stroke {
-	  fill: none;
-	  stroke: #020;
-	  stroke-width: 3px;
+		fill: none;
+		stroke: #aaa;
+		stroke-width: .2px;
 	}
 
 	.fill {
-	  fill: #fff;
+		fill: #fff;
 	}
 
 	.graticule {
-	  fill: none;
-	  stroke: #000;
-	  stroke-width: .2px;
+		fill: none;
+		stroke: #aaa;
+		stroke-width: .2px;
 	}
 
 	.boundary {
-	  fill: none;
-	  stroke: #fff;
-	  stroke-width: .6px;
+		fill: none;
+		stroke: #fff;
+		stroke-width: .2px;
+	}
+
+	.legendeTexte {
+		font-size: .6em;
+		font-family: sans-serif;
+		fill: #aaa;
 	}
 
 	</style>
 	<script src="d3.js"></script>
+	<script src="http://d3js.org/d3.geo.projection.v0.min.js"></script>
 	<script src="queue.v1.min.js"></script>
 </head>	
 
@@ -44,84 +52,128 @@
 <script>
 
 
-//définition du canvas
-var width = 800,
-    height = 600;
+var width = 800, height = 600;
 
-// définition du type de projection
-var projection = d3.geo.mercator()
-  .scale(80)
-  .translate([width / 2, height / 2]);
+var projection = d3.geo
+	.azimuthalEqualArea()
+	//.mercator()
+	//.kavrayskiy7()
+	//.mollweide()
+	//.peirceQuincuncial()
+	//.conicEquidistant()
+	//.orthographic()
+	//.eisenlohr()
+	.scale(100)
+	.translate([(width / 2)+100, height / 2]);
 
-// application du type de projection à la forme Path
-var path = d3.geo.path()
-  .projection(projection);
+var path = d3.geo.path().projection(projection);
 
 var graticule = d3.geo.graticule();
 
-// création de l'objet svg
 var svg = d3.select("body").append("svg")
-  .attr("width", width)
-  .attr("height", height);
+	.attr("width", width+100)
+	.attr("height", height);
 
-//création de la shpère de fond
+
+
+/*/création de la shpère de fond
 svg.append("defs").append("path")
 	.datum({type: "Sphere"})
-  .attr("id", "sphere")
-  .attr("d", path)
-	.style("fill", "hsl(180, 50%, 50%)");
+	.attr("id", "sphere")
+	.attr("d", path)
+	.style("fill", "#fff");
 
 svg.append("use")
-  .attr("class", "stroke")
-  .attr("xlink:href", "#sphere");
+	.attr("class", "stroke")
+	.attr("xlink:href", "#sphere");
 
 svg.append("use")
-  .attr("class", "fill")
-  .attr("xlink:href", "#sphere");
+	.attr("class", "fill")
+	.attr("xlink:href", "#sphere");
 
-// ajout des graticules à l'objet svg
 svg.append("path")
-  .datum(graticule)
-  .attr("class", "graticule")
-  .attr("d", path);
+	.datum(graticule)
+	.attr("class", "graticule")
+	.attr("d", path);
+//*/
 
 
 var religionDominante = [];
+var selection = [];
+var pictoPath = [];
 
 
-queue().defer(d3.csv, "WRPstate2010.csv", function(d, i){ traiterReligions(d, i); })
-	.defer(d3.csv, "COWstate.csv", function(d){ traiterNoms(d); })
-	.await(ready);
 
-
+	
+queue()
+	.defer(d3.csv, 	"WRPstate2010.csv", 		function(d, i){ traiterReligions(d, i); })
+	.defer(d3.csv, 	"COWstate.csv", 		function(d){ traiterNoms(d); })
+	.defer(d3.csv, 	"pictos.csv", 			function(d){ traiterPictos(d)})
+	.defer(d3.json,	"world-countries.json", 	function(d){ dessinerCarte(d); })
+	.defer(d3.csv ,	"listeCapitalesPosition.csv", 	function(d){ dessinerCapitales(d); })
+	.awaitAll(ready());
 
 
 
 
 function traiterReligions(d, i) {
-		
-	var selection = [
-		[ d.chrstgenpct, "Christianity", "hsl(0, 50%, 50%)" ], 
-		[ d.judgenpct, "Juif", "hsl(40, 50%, 50%)" ],
-		[ d.islmgenpct, "Islam", "hsl(80, 50%, 50%)" ],
-		[ d.budgenpct, "Bouddhism", "hsl(120, 50%, 50%)" ],
-		[ d.hindgenpct, "Hindou", "hsl(160, 50%, 50%)" ]
+
+	// selection des données qui nous interessent
+	selection = [
+		[ d.chrstgenpct, 	"Christianity", 	null, 
+			[
+			[ d.chrstcatpct, 	"Catholic", 		"#FF8E28" ], 
+			[ d.chrstprotpct, 	"Protestant", 		"#B27D3E" ], 
+			[ d.chrstorthpct, 	"Orthodox", 		"#BA5913" ],
+			[ d.chrstangpct, 	"Anglican", 		"#9A4307" ]
+			] 
+		], 
+		[ d.islmgenpct, 	"Islam", 		null, 
+			[
+				[ d.islmsunpct, 	"Sunni", 	"#46FF44" ],
+				[ d.islmshipct, 	"Shi'a", 	"#1A8F53" ],
+			] 
+		], 
+		[ d.judgenpct, 		"Judaism", 		"#BF7630" ],
+		[ d.budgenpct, 		"Buddhism", 		"#E82B49" ],
+		[ d.taogenpct, 		"Taoism", 		"#FF2800" ],
+		[ d.hindgenpct, 	"Hindu", 		"#B570FF" ],
+		[ d.confgenpct, 	"Confucianism", 	"#FF9EC9" ],
+		[ d.anmgenpct,	 	"Animist", 		"#FFE463" ]
 		];
 
+		 
+	
+	// determiner le max des grands groupes de religions
 	var max = 0;
 	var index = 0;
 	selection.forEach(function(selec, j){
 		if(selec[0] > max){ max = selec[0]; index = j; }
 	});
-	religionDominante[i] = [d.state, selection[index][1], selection[index][2] ];
+	
+	
+
+	// determiner le max des sous groupes de religions
+	if(index < 2){
+		var sousMax = 0; 
+		var sousIndex = 0;
+		selection[index][3].forEach(function(sousSelec, k){
+			if(sousSelec[0] > sousMax){ sousMax = sousSelec[0]; sousIndex = k; }			
+		});
+		religionDominante[i] = [d.state, selection[index][3][sousIndex][1], selection[index][3][sousIndex][2] ];
+	} else {
+		religionDominante[i] = [d.state, selection[index][1], selection[index][2] ];
+	}
+
 
 } 
 
 
 
 
-function traiterNoms(d) {
-
+function traiterNoms(d) 
+{
+	// convert COW code en nom de pays
 	religionDominante.forEach(function(r, i){
 		if(r[0] == d.id){ religionDominante[i][0] = d.name; }		
 	});	
@@ -130,35 +182,131 @@ function traiterNoms(d) {
 
 
 
+function traiterPictos(data)
+{
+	// lecture des pictos
+	pictoPath[0] = data.path;
+	
+}
+
+
+
+function dessinerCarte(collection)
+{
+	
+	// dessin de la carte
+	var groupFeatures = svg.append("svg:g"); 	
+	groupFeatures.selectAll("path")
+		.data(collection.features)
+		.enter().append("svg:path")
+		.attr("d", path)
+		.attr("class", "boundary")
+		.attr("id", function(d){ return d.id; })
+		.attr("title", function(d){ return d.properties.name; })
+		.style("fill", function(d)
+		{ 
+			// couleur en fonction de la religion dominante
+			var couleur = "#ccc";
+			religionDominante.forEach(function(r){
+				if(d.properties.name == r[0]){ 
+					couleur = r[2]; 
+				}		
+			});	
+			return couleur;	
+		});
+
+	
+	// dessin du picto au niveau du centroid du pays
+	collection.features.forEach(function(d) {
+		var centroid = path.centroid(d);
+		svg.append("svg:g")
+			.attr("transform", "translate("+centroid[0]+", "+centroid[1]+") scale(2)")
+			.append("svg:path")
+				.attr("d", pictoPath[0])
+				.style("fill", "#fff");
+		
+	});
+
+	
+
+
+	// legende	
+	var x = 10;
+	var y = 0;
+	var legende = svg.append("svg:g").attr("class", "legende");
+	function dessinerLegende(d, x)
+	{
+		legende.append("svg:rect")
+			.attr("width", "10").attr("height", "10")
+			.attr("x", x).attr("y", y)
+			.style("fill", d[2]);
+		legende.append("svg:text").attr("class", "legendeTexte")
+			.attr("x", x+20).attr("y", y+10)
+			.text(d[1]);
+			
+		y += 30;
+	}
+
+	selection.forEach(function(data){
+		if(data.length > 3)
+		{
+			legende.append("svg:text").attr("class", "legendeTexte")
+				.attr("x", x).attr("y", y+10)
+				.text(data[1]);
+			y += 20;
+			data[3].forEach(function(d){ dessinerLegende(d, x+10); });
+		} else {
+			dessinerLegende(data, x);
+		}
+	});
+		
+}
+
+function dessinerCapitales(data)
+{ 
+
+	// conversion des latitudes et longitudes
+	var lat = parseFloat(data.lat.substring(0, data.lat.length-1));
+	var sens = data.lat.substring(data.lat.length-1, data.lat.length);
+	if(sens == "S"){ lat *= -1; }
+	var long = parseFloat(data.long.substring(0, data.long.length-1));
+	sens = data.long.substring(data.long.length-1, data.long.length);
+	if(sens == "W"){ long *= -1; }
+	
+	var coordonnees = [ long, lat ];
+	var traductionCoor = projection(coordonnees);
+	var x = traductionCoor[0];
+	var y = traductionCoor[1];
+
+	// dessiner un point
+	svg.append("rect")
+		.attr("width", 2)
+		.attr("height", 2)
+		.attr("x", x)
+		.attr("y", y)
+		.style("fill", "#ccc");
+
+	/*// dessiner le nom de la capitale
+	svg.append("svg:text")
+		.attr("x", x+4).attr("y", y+4)
+		.text(data.capital)
+		.attr("font-size", ".6em")
+		.attr("font-family", "sans-serif")
+		.style("fill", "#ccc");
+	//*/
+	
+}
+
 
 function ready()
 {
-
-	d3.json("world-countries.json", function(collection) {
-
-		var groupFeatures = svg.append("svg:g"); 	
-		feature = groupFeatures.selectAll("path")
-			.data(collection.features)
-			.enter().append("svg:path")
-			.attr("d", path)
-			.attr("class", "boundary")
-			.attr("id", function(d){ return d.id; })
-			.attr("title", function(d){ return d.properties.name; })
-			.style("fill", function(d){ 
-				var couleur = "#ccc";
-				religionDominante.forEach(function(r){
-					if(d.properties.name == r[0]){ 
-						couleur = r[2]; 
-					}		
-				});	
-				return couleur;	
-			});	
-
-	}); // fin du world-countries.json
-
+	
 }
 
 
 </script>
 </body>
+</html>
+
+
 
