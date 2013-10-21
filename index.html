@@ -55,8 +55,8 @@
 var width = 800, height = 600;
 
 var projection = d3.geo
-	.azimuthalEqualArea()
-	//.mercator()
+	//.azimuthalEqualArea()
+	.mercator()
 	//.kavrayskiy7()
 	//.mollweide()
 	//.peirceQuincuncial()
@@ -226,6 +226,7 @@ function dessinerCarte(collection)
 				.style("fill", "#fff");
 		
 	});
+	//*/
 
 	
 
@@ -286,14 +287,14 @@ function dessinerCapitales(data)
 		.attr("y", y)
 		.style("fill", "#ccc");
 
-	/*// dessiner le nom de la capitale
+	/* dessiner le nom de la capitale
 	svg.append("svg:text")
 		.attr("x", x+4).attr("y", y+4)
 		.text(data.capital)
 		.attr("font-size", ".6em")
 		.attr("font-family", "sans-serif")
 		.style("fill", "#ccc");
-	//*/
+	*/
 	
 }
 
