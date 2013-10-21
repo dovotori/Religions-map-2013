@@ -52,7 +52,8 @@
 <script>
 
 
-var width = 800, height = 600;
+var width = window.innerWidth-100, 
+	height = window.innerHeight;
 
 var projection = d3.geo
 	//.azimuthalEqualArea()
@@ -101,6 +102,9 @@ svg.append("path")
 var religionDominante = [];
 var selection = [];
 var pictoPath = [];
+var carte = svg.append("svg:g");
+var isZoomed = false;
+
 
 
 
@@ -190,13 +194,28 @@ function traiterPictos(data)
 }
 
 
+function zoom(d)
+{ 
+	var centroid = path.centroid(d);
+	var scale = 0;
+	if(!isZoomed)
+	{
+		scale = 2;
+	} else {
+		scale = 1;	
+	}
+	isZoomed = !isZoomed;
+	carte.transition()
+      		.duration(750)
+      		.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + scale + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");
+}
+
 
 function dessinerCarte(collection)
 {
 	
 	// dessin de la carte
-	var groupFeatures = svg.append("svg:g"); 	
-	groupFeatures.selectAll("path")
+	carte.selectAll("path")
 		.data(collection.features)
 		.enter().append("svg:path")
 		.attr("d", path)
@@ -213,13 +232,17 @@ function dessinerCarte(collection)
 				}		
 			});	
 			return couleur;	
-		});
+		})
+		.on("click", function(d, i){ zoom(d, i); });
+		
+	
+	
 
 	
-	// dessin du picto au niveau du centroid du pays
+	/* dessin du picto au niveau du centroid du pays
 	collection.features.forEach(function(d) {
-		var centroid = path.centroid(d);
-		svg.append("svg:g")
+		centroid = path.centroid(d);
+		carte.append("svg:g")
 			.attr("transform", "translate("+centroid[0]+", "+centroid[1]+") scale(2)")
 			.append("svg:path")
 				.attr("d", pictoPath[0])
@@ -280,7 +303,7 @@ function dessinerCapitales(data)
 	var y = traductionCoor[1];
 
 	// dessiner un point
-	svg.append("rect")
+	carte.append("rect")
 		.attr("width", 2)
 		.attr("height", 2)
 		.attr("x", x)
@@ -288,7 +311,7 @@ function dessinerCapitales(data)
 		.style("fill", "#ccc");
 
 	/* dessiner le nom de la capitale
-	svg.append("svg:text")
+	carte.append("svg:text")
 		.attr("x", x+4).attr("y", y+4)
 		.text(data.capital)
 		.attr("font-size", ".6em")
