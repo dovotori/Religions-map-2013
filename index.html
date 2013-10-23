@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>Religions index map 2013</title>
+	<title>Blaspheme map 2013</title>
 	<style>
 
 	body {
@@ -99,75 +99,27 @@ svg.append("path")
 //*/
 
 
-var religionDominante = [];
-var selection = [];
-var pictoPath = [];
+
+
 var carte = svg.append("svg:g");
 var isZoomed = false;
 
 
 
-
 	
 queue()
-	.defer(d3.csv, 	"WRPstate2010.csv", 		function(d, i){ traiterReligions(d, i); })
-	.defer(d3.csv, 	"COWstate.csv", 		function(d){ traiterNoms(d); })
-	.defer(d3.csv, 	"pictos.csv", 			function(d){ traiterPictos(d)})
+	.defer(d3.csv, 	"blasphemeInfos.csv", 		function(d, i){ traiterInfos(d, i); })
 	.defer(d3.json,	"world-countries.json", 	function(d){ dessinerCarte(d); })
-	.defer(d3.csv ,	"listeCapitalesPosition.csv", 	function(d){ dessinerCapitales(d); })
 	.awaitAll(ready());
 
 
 
 
-function traiterReligions(d, i) {
-
-	// selection des données qui nous interessent
-	selection = [
-		[ d.chrstgenpct, 	"Christianity", 	null, 
-			[
-			[ d.chrstcatpct, 	"Catholic", 		"#FF8E28" ], 
-			[ d.chrstprotpct, 	"Protestant", 		"#B27D3E" ], 
-			[ d.chrstorthpct, 	"Orthodox", 		"#BA5913" ],
-			[ d.chrstangpct, 	"Anglican", 		"#9A4307" ]
-			] 
-		], 
-		[ d.islmgenpct, 	"Islam", 		null, 
-			[
-				[ d.islmsunpct, 	"Sunni", 	"#46FF44" ],
-				[ d.islmshipct, 	"Shi'a", 	"#1A8F53" ],
-			] 
-		], 
-		[ d.judgenpct, 		"Judaism", 		"#BF7630" ],
-		[ d.budgenpct, 		"Buddhism", 		"#E82B49" ],
-		[ d.taogenpct, 		"Taoism", 		"#FF2800" ],
-		[ d.hindgenpct, 	"Hindu", 		"#B570FF" ],
-		[ d.confgenpct, 	"Confucianism", 	"#FF9EC9" ],
-		[ d.anmgenpct,	 	"Animist", 		"#FFE463" ]
-		];
+function traiterInfos(d, i) {
 
 		 
-	
-	// determiner le max des grands groupes de religions
-	var max = 0;
-	var index = 0;
-	selection.forEach(function(selec, j){
-		if(selec[0] > max){ max = selec[0]; index = j; }
-	});
-	
-	
+	alert(d);	
 
-	// determiner le max des sous groupes de religions
-	if(index < 2){
-		var sousMax = 0; 
-		var sousIndex = 0;
-		selection[index][3].forEach(function(sousSelec, k){
-			if(sousSelec[0] > sousMax){ sousMax = sousSelec[0]; sousIndex = k; }			
-		});
-		religionDominante[i] = [d.state, selection[index][3][sousIndex][1], selection[index][3][sousIndex][2] ];
-	} else {
-		religionDominante[i] = [d.state, selection[index][1], selection[index][2] ];
-	}
 
 
 } 
@@ -175,23 +127,10 @@ function traiterReligions(d, i) {
 
 
 
-function traiterNoms(d) 
-{
-	// convert COW code en nom de pays
-	religionDominante.forEach(function(r, i){
-		if(r[0] == d.id){ religionDominante[i][0] = d.name; }		
-	});	
-
-} 
 
 
 
-function traiterPictos(data)
-{
-	// lecture des pictos
-	pictoPath[0] = data.path;
-	
-}
+
 
 
 function zoom(d)
@@ -222,20 +161,9 @@ function dessinerCarte(collection)
 		.attr("class", "boundary")
 		.attr("id", function(d){ return d.id; })
 		.attr("title", function(d){ return d.properties.name; })
-		.style("fill", function(d)
-		{ 
-			// couleur en fonction de la religion dominante
-			var couleur = "#ccc";
-			religionDominante.forEach(function(r){
-				if(d.properties.name == r[0]){ 
-					couleur = r[2]; 
-				}		
-			});	
-			return couleur;	
-		})
+		.style("fill", "#000")
 		.on("click", function(d, i){ zoom(d, i); });
 		
-	
 	
 
 	
@@ -253,8 +181,8 @@ function dessinerCarte(collection)
 
 	
 
-
-	// legende	
+	
+	/*/ legende	
 	var x = 10;
 	var y = 0;
 	var legende = svg.append("svg:g").attr("class", "legende");
@@ -283,42 +211,8 @@ function dessinerCarte(collection)
 			dessinerLegende(data, x);
 		}
 	});
+	//*/
 		
-}
-
-function dessinerCapitales(data)
-{ 
-
-	// conversion des latitudes et longitudes
-	var lat = parseFloat(data.lat.substring(0, data.lat.length-1));
-	var sens = data.lat.substring(data.lat.length-1, data.lat.length);
-	if(sens == "S"){ lat *= -1; }
-	var long = parseFloat(data.long.substring(0, data.long.length-1));
-	sens = data.long.substring(data.long.length-1, data.long.length);
-	if(sens == "W"){ long *= -1; }
-	
-	var coordonnees = [ long, lat ];
-	var traductionCoor = projection(coordonnees);
-	var x = traductionCoor[0];
-	var y = traductionCoor[1];
-
-	// dessiner un point
-	carte.append("rect")
-		.attr("width", 2)
-		.attr("height", 2)
-		.attr("x", x)
-		.attr("y", y)
-		.style("fill", "#ccc");
-
-	/* dessiner le nom de la capitale
-	carte.append("svg:text")
-		.attr("x", x+4).attr("y", y+4)
-		.text(data.capital)
-		.attr("font-size", ".6em")
-		.attr("font-family", "sans-serif")
-		.style("fill", "#ccc");
-	*/
-	
 }
 
 
