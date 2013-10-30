@@ -34,6 +34,15 @@
 		stroke: #fff;
 		stroke-width: .2px;
 	}
+	
+	.NNN{ fill: #aaaaaa; }
+	.ONN{ fill: #ff0000; }
+	.NON{ fill: #dd0000; }
+	.NNO{ fill: #bb0000; }
+	.OON{ fill: #990000; }
+	.NOO{ fill: #770000; }
+	.ONO{ fill: #550000; }
+	.OOO{ fill: #330000; }
 
 	.legendeTexte {
 		font-size: .6em;
@@ -99,7 +108,7 @@ svg.append("path")
 
 
 
-var couleursPays = [];
+var infosPays = [];
 var carte = svg.append("svg:g");
 var isZoomed = false;
 
@@ -116,43 +125,26 @@ queue()
 
 function traiterInfos(d, i) {
 
-	var couleurs = [ "00f200", "00e100", "00e600" ];
 	var categories = [ d.blasphème, d.apostasie, d.diffamation ];
 	
-	var melange = 0;
+	var nomClasse = "";
 	categories.forEach(function(d, j){  	
 		if(d == "oui"){ 
-			var valeurCouleur = parseInt(couleurs[j], 16); 
-			melange += valeurCouleur; 
-		}	
+			nomClasse += "O";
+		} else {
+			nomClasse += "N";	
+		}
 	});	
 	
-	couleursPays.push([ d.iso, convertirCouleur(melange)]);
+	var mort = false;
+	if(d.mort == "oui"){ mort = true; }
+	
+	infosPays.push([ d.iso, nomClasse, mort ]);
 	
 } 
 
 
 
-
-function convertirCouleur(melange){
-	
-	var convMelange;
-	if(melange != 0)
-	{
-		convMelange = melange.toString(16);
-		var manqueLettres = 6 - convMelange.length;
-		
-		for(var i = 0; i < manqueLettres; i++)
-		{ 
-			convMelange = "0"+convMelange; 
-		}
-		convMelange = "#"+convMelange;
-	} else {
-		convMelange = "#aaa";	
-	}
-	
-	return convMelange;
-}
 
 
 
@@ -183,6 +175,8 @@ function zoom(d)
 
 
 
+
+
 function dessinerCarte(collection)
 {
 	
@@ -191,36 +185,48 @@ function dessinerCarte(collection)
 		.data(collection.features)
 		.enter().append("svg:path")
 		.attr("d", path)
-		.attr("class", "boundary")
 		.attr("id", function(d){ return d.id; })
 		.attr("title", function(d){ return d.properties.name; })
-		.style("fill", function(d){
-			 
-			couleursPays.forEach(function(e, i){
-				if(couleursPays[i][0] == d.id)
+		.attr("class", function(d){
+			
+			var classe = ""; 
+			infosPays.forEach(function(e, i){
+				if(infosPays[i][0] == d.id)
 				{
-					couleur = couleursPays[i][1];
+					classe = infosPays[i][1];
 				}
 			});
-			return couleur;
+			return "boundary "+classe;
 		})
 		.on("click", function(d, i){ zoom(d, i); });
 		
 	
 
+
 	
-	/* dessin du picto au niveau du centroid du pays
-	collection.features.forEach(function(d) {
-		centroid = path.centroid(d);
+	// dessin du picto au niveau du centroid du pays
+	collection.features.forEach(function(data) {
+		var centroid = path.centroid(data);
 		carte.append("svg:g")
-			.attr("transform", "translate("+centroid[0]+", "+centroid[1]+") scale(2)")
+			.attr("transform", "translate("+centroid[0]+", "+centroid[1]+") scale(1)")
 			.append("svg:path")
-				.attr("d", pictoPath[0])
-				.style("fill", "#fff");
+				.attr("d", function(d){
+					
+					var forme = "";
+					infosPays.forEach(function(e, i){
+						if(infosPays[i][0] == data.id)
+						{
+							if(infosPays[i][2])
+							{
+								forme = "M0 0 L0 -5 M2 -3 L-2 -3";
+							}
+						}
+					});
+					return forme;
+				})
+				.style("stroke", "#fff");
 		
 	});
-	//*/
-
 	
 
 	
