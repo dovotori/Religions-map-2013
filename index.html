@@ -229,37 +229,42 @@ function dessinerCarte(collection)
 	});
 	
 
-	
-	/* legende	
+	// legende
 	var x = 10;
-	var y = 0;
+	var y = 10;
 	var legende = svg.append("svg:g").attr("class", "legende");
-	function dessinerLegende(d, x)
-	{
+	legende.append("svg:text").attr("class", "legendeTexte")
+			.attr("x", x).attr("y", y)
+			.text("Penalisation par la loi");
+	y += 20;
+			
+	var categories = [ [ "NNN", "aucune"], [ "ONN", "blasphème" ], [ "NON", "apostasie" ], [ "NNO", "diffamation" ], [ "OON", "blasphème + apostasie" ], [ "NOO", "apostasie + diffamation" ], [ "ONO", "blasphème + diffamation"], [ "OOO", "la totale"] ];
+	
+	categories.forEach(function(d){
 		legende.append("svg:rect")
 			.attr("width", "10").attr("height", "10")
 			.attr("x", x).attr("y", y)
-			.style("fill", d[2]);
+			.attr("class", d[0]);
 		legende.append("svg:text").attr("class", "legendeTexte")
 			.attr("x", x+20).attr("y", y+10)
 			.text(d[1]);
 			
 		y += 30;
-	}
-
-	selection.forEach(function(data){
-		if(data.length > 3)
-		{
-			legende.append("svg:text").attr("class", "legendeTexte")
-				.attr("x", x).attr("y", y+10)
-				.text(data[1]);
-			y += 20;
-			data[3].forEach(function(d){ dessinerLegende(d, x+10); });
-		} else {
-			dessinerLegende(data, x);
-		}
 	});
-	//*/
+	legende.append("svg:path")
+		.attr("transform", "translate("+(x+5)+", "+(y+3)+") scale(2)")
+		.attr("d", "M0 0 L0 -5 M2 -3 L-2 -3")
+		.style("stroke", "#000");
+	
+	legende.append("svg:text").attr("class", "legendeTexte")
+		.attr("x", x+20).attr("y", y)
+		.text("puni de mort");
+	
+	
+	
+	
+	
+	
 		
 }
 
