@@ -49,6 +49,12 @@
 		font-family: sans-serif;
 		fill: #aaa;
 	}
+	
+	.infosTexte {
+		font-size: .6em;
+		font-family: sans-serif;
+		fill: #fff;
+	}
 
 	</style>
 	<script src="d3.js"></script>
@@ -112,6 +118,14 @@ var infosPays = [];
 var carte = svg.append("svg:g");
 var isZoomed = false;
 
+var infosFond = svg.append("svg:rect");
+infosFond.style("fill", "#ccc");
+var infosTexte = [10];
+for(var i = 0; i < 10; i++){
+	infosTexte[i] = svg.append("svg:text");
+	infosTexte[i].attr("class", "infosTexte");
+}
+	
 
 
 	
@@ -148,28 +162,6 @@ function traiterInfos(d, i) {
 
 
 
-function zoom(d)
-{ 
-	var centroid = path.centroid(d);
-	var scale = 0;
-	var targetX, targetY;
-	
-	if(!isZoomed)
-	{
-		targetX = -centroid[0];
-		targetY = -centroid[1];
-		scale = 2;
-	} else {
-		targetX = -(width / 2);
-		targetY = -(height / 2);
-		scale = 1;	
-	}
-	isZoomed = !isZoomed;
-	carte.transition()
-      		.duration(750)
-      		.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + scale + ")translate(" + targetX + "," + targetY + ")");
-}
-
 
 
 
@@ -198,7 +190,9 @@ function dessinerCarte(collection)
 			});
 			return "boundary "+classe;
 		})
-		.on("click", function(d, i){ zoom(d, i); });
+		.on("mouseover", function(d){ over(d); })
+		.on("mouseout", function(d){ out(d); })
+		.on("click", function(d){ click(d); });
 		
 	
 
@@ -224,10 +218,10 @@ function dessinerCarte(collection)
 					});
 					return forme;
 				})
-				.style("stroke", "#fff");
-		
+				.style("stroke", "#fff");	
 	});
 	
+
 
 	// legende
 	var x = 10;
@@ -251,6 +245,8 @@ function dessinerCarte(collection)
 			
 		y += 30;
 	});
+	
+	y += 5;
 	legende.append("svg:path")
 		.attr("transform", "translate("+(x+5)+", "+(y+3)+") scale(2)")
 		.attr("d", "M0 0 L0 -5 M2 -3 L-2 -3")
@@ -258,15 +254,165 @@ function dessinerCarte(collection)
 	
 	legende.append("svg:text").attr("class", "legendeTexte")
 		.attr("x", x+20).attr("y", y)
-		.text("puni de mort");
-	
-	
-	
-	
-	
-	
+		.text("puni de mort");	
 		
 }
+
+
+
+
+
+
+
+
+
+// INTERACTION
+
+function over(d)
+{
+	var cible = this.svg.select("#"+d.id);
+	cible.transition()
+		.duration(200)
+		.attr("transform", "translate(0, -2)");
+}
+
+
+function out(d)
+{
+	var cible = this.svg.select("#"+d.id);
+	cible.transition()
+		.duration(200)
+		.attr("transform", "translate(0, 0)");		
+}
+
+
+
+
+function click(d)
+{ 
+
+	// zoom
+	var centroid = path.centroid(d);
+	var scale = 0;
+	var targetX, targetY;
+	var pays = svg.selectAll(".boundary");
+	
+	if(!isZoomed)
+	{
+		pays.style("fill", "#aaa");
+		var cible = svg.select("#"+d.id);
+		cible.style("fill", "#f00");
+		
+		
+		targetX = -centroid[0];
+		targetY = -centroid[1];
+		scale = 2;
+	} else {
+		
+		colorerPays(pays);
+		
+		targetX = -(width / 2);
+		targetY = -(height / 2);
+		scale = 1;
+	}
+	
+	
+	carte.transition()
+      		.duration(750)
+      		.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + scale + ")translate(" + targetX + "," + targetY + ")");
+    
+    
+    
+    // afficher info
+    var fondLargeur, fondHauteur;
+    var x = 300;
+    var y = 2;
+    
+    if(!isZoomed)
+	{
+		infosTexte[0].text(d.properties.name);
+		recupererInfos(d);
+		fondLargeur = 200;
+		fondHauteur = 260;
+		
+	} else {
+		fondLargeur = 0;
+		fondHauteur = 0;
+		resetInfos();
+	}
+    
+    infosFond.transition()
+    	.duration(750)
+    	.attr("x", x).attr("y", y)
+    	.attr("width", fondLargeur).attr("height", fondHauteur);
+	
+	
+	for(var i = 0; i < 10; i++){		
+		infosTexte[i].transition()
+	    	.duration(750)
+	    	.attr("x", x+20).attr("y", y+20);
+	    y += 20;
+	}    
+    
+    
+    isZoomed = !isZoomed;
+
+}
+
+
+
+function colorerPays(pays)
+{
+	pays.forEach(function(d){
+		alert(d.id);
+	});	
+}
+
+
+
+function resetInfos()
+{
+	for(var i = 0; i < 10; i++){		
+		infosTexte[i].text("");
+	}
+}
+
+
+
+function recupererInfos(data)
+{
+	var texte = "\n";
+	var cow = "";
+	d3.csv("COWstate.csv", function(d){	
+ 		d.forEach(function(e){
+ 			if(e.name == data.properties.name)
+ 			{
+ 				cow = e.cow;
+ 			}
+ 		});   	
+    });
+    
+    d3.csv("WRPstate2010.csv", function(d){
+    	d.forEach(function(e){
+ 			if(cow == e.name)
+ 			{
+				infosTexte[1].text("Catholic: "+e.chrstcatpct+"%");
+				infosTexte[2].text("Protestant: "+e.chrstprotpct+"%");
+				infosTexte[3].text("Orthodox: "+e.chrstorthpct+"%");
+				infosTexte[4].text("Anglican: "+e.chrstangpct+"%");
+				infosTexte[5].text("Sunni: "+e.islmsunpct+"%");
+				infosTexte[6].text("Shi'a: "+e.islmshipct+"%");
+				infosTexte[7].text("Judaism: "+e.judgenpct+"%");
+				infosTexte[8].text("Buddhism: "+e.budgenpct+"%");
+				infosTexte[9].text("Taoism: "+e.taogenpct+"%");
+ 			}
+ 		});
+    });
+    
+    
+    
+}
+
 
 
 function ready()
