@@ -11,16 +11,13 @@
 	
 	svg {
 		background: #fff;
+		width: 100%;
 	}
 
 	.stroke {
 		fill: none;
 		stroke: #aaa;
 		stroke-width: .2px;
-	}
-
-	.fill {
-		fill: #fff;
 	}
 
 	.graticule {
@@ -50,10 +47,16 @@
 		fill: #aaa;
 	}
 	
+	.infosTitre {
+		font-size: .8em;
+		font-family: sans-serif;
+		fill: #f00;
+	}
+	
 	.infosTexte {
 		font-size: .6em;
 		font-family: sans-serif;
-		fill: #fff;
+		fill: #555;
 	}
 
 	</style>
@@ -65,6 +68,10 @@
 <body>
 
 <script>
+
+
+
+
 
 
 var width = window.innerWidth, 
@@ -111,33 +118,20 @@ svg.append("path")
 	.attr("class", "graticule")
 	.attr("d", path);
 
-
-
-
 var infosPays = [];
-var carte = svg.append("svg:g");
-var isZoomed = false;
-
-var infosFond = svg.append("svg:rect");
-infosFond.style("fill", "#ccc");
-var infosTexte = [10];
-for(var i = 0; i < 10; i++){
-	infosTexte[i] = svg.append("svg:text");
-	infosTexte[i].attr("class", "infosTexte");
-}
-	
+var carte = svg.append("svg:g").attr("id", "carte");
 
 
 	
 queue()
-	.defer(d3.csv, 	"blasphemeInfos.csv", 		function(d, i){ traiterInfos(d, i); })
+	.defer(d3.csv, 	"blasphemeInfos.csv", 		function(d, i){ traiterInfosBlaspheme(d, i); })
 	.defer(d3.json,	"world-countries.json", 	function(d){ dessinerCarte(d); })
 	.awaitAll(ready());
 
 
 
 
-function traiterInfos(d, i) {
+function traiterInfosBlaspheme(d, i) {
 
 	var categories = [ d.blasphème, d.apostasie, d.diffamation ];
 	
@@ -152,7 +146,7 @@ function traiterInfos(d, i) {
 	
 	var mort = false;
 	if(d.mort == "oui"){ mort = true; }
-	
+
 	infosPays.push([ d.iso, nomClasse, mort ]);
 	
 } 
@@ -163,16 +157,10 @@ function traiterInfos(d, i) {
 
 
 
-
-
-
-
-
-
 function dessinerCarte(collection)
 {
 	
-	// dessin de la carte
+	// CARTE
 	carte.selectAll("path")
 		.data(collection.features)
 		.enter().append("svg:path")
@@ -198,7 +186,7 @@ function dessinerCarte(collection)
 
 
 	
-	// dessin du picto au niveau du centroid du pays
+	// PICTOS
 	collection.features.forEach(function(data) {
 		var centroid = path.centroid(data);
 		carte.append("svg:g")
@@ -223,16 +211,23 @@ function dessinerCarte(collection)
 	
 
 
-	// legende
+	// LEGENDE
 	var x = 10;
-	var y = 10;
+	var y = 14;
 	var legende = svg.append("svg:g").attr("class", "legende");
-	legende.append("svg:text").attr("class", "legendeTexte")
+	legende.append("svg:text").attr("class", "infosTitre")
 			.attr("x", x).attr("y", y)
 			.text("Penalisation par la loi");
 	y += 20;
 			
-	var categories = [ [ "NNN", "aucune"], [ "ONN", "blasphème" ], [ "NON", "apostasie" ], [ "NNO", "diffamation" ], [ "OON", "blasphème + apostasie" ], [ "NOO", "apostasie + diffamation" ], [ "ONO", "blasphème + diffamation"], [ "OOO", "la totale"] ];
+	var categories = [ [ "NNN", "aucune"], 
+						[ "ONN", "blasphème" ], 
+						[ "NON", "apostasie" ], 
+						[ "NNO", "diffamation" ], 
+						[ "OON", "blasphème + apostasie" ], 
+						[ "NOO", "apostasie + diffamation" ], 
+						[ "ONO", "blasphème + diffamation"], 
+						[ "OOO", "la totale"] ];
 	
 	categories.forEach(function(d){
 		legende.append("svg:rect")
@@ -258,6 +253,10 @@ function dessinerCarte(collection)
 		
 }
 
+function ready()
+{
+	
+}
 
 
 
@@ -266,94 +265,138 @@ function dessinerCarte(collection)
 
 
 
-// INTERACTION
+
+
+
+/////////////////////////////////////
+// INTERACTION /////////////////////
+///////////////////////////////////
+
 
 function over(d)
 {
-	var cible = this.svg.select("#"+d.id);
-	cible.transition()
-		.duration(200)
-		.attr("transform", "translate(0, -2)");
+	if(!isZoomed)
+	{
+		var cible = this.svg.select("#"+d.id);
+		cible.transition()
+			.duration(100)
+			.style("fill", "#f00");
+	}
 }
 
 
 function out(d)
 {
-	var cible = this.svg.select("#"+d.id);
-	cible.transition()
-		.duration(200)
-		.attr("transform", "translate(0, 0)");		
+	if(!isZoomed)
+	{
+		var cible = this.svg.select("#"+d.id);
+		cible.transition()
+			.duration(100)
+			.style("fill", null);		
+	}
 }
 
 
 
 
-function click(d)
-{ 
+var isZoomed = false;
+var infos = svg.append("svg:g").attr("id", "infos");
+var infosFond = infos.append("svg:rect").attr("id", "infosFond").style("fill", "#eee");
+var infosTitre = infos.append("svg:text").attr("class", "infosTitre");
+var nbCat = 9;
+var infosTexte = [nbCat];
+for(var i = 0; i < nbCat; i++){
+	infosTexte[i] = infos.append("svg:text").attr("class", "infosTexte");
+}
+var infosValeurs = [3]; infosValeurs[0] = []; infosValeurs[1] = []; infosValeurs[2] = [];
+var paysClique;
+var cow = ""; var isInformed;
+var pie = d3.layout.pie().sort(null).value(function(d) { return d; });    
+var arc = d3.svg.arc().outerRadius(20).innerRadius(60);
+var donut;
+var legendeReligionsCarres = [nbCat];
+var legendeReligionsTextes = [nbCat];
+		
 
+
+
+
+function click(d)
+{ 	
+	paysClique = d;
+	isInformed = false;
+	
 	// zoom
 	var centroid = path.centroid(d);
 	var scale = 0;
 	var targetX, targetY;
-	var pays = svg.selectAll(".boundary");
 	
+	// fond infos
+	var fondLargeur, fondHauteur;
+	
+	// ZOOM PAYS
 	if(!isZoomed)
 	{
-		pays.style("fill", "#aaa");
+		// couleurs pour le pays cliqué
+		d3.selectAll(".boundary").transition().duration(750).style("fill", "#aaa");
 		var cible = svg.select("#"+d.id);
-		cible.style("fill", "#f00");
+		cible.transition().duration(750).style("fill", "#f00");
 		
-		
+		// centre du pays pour le zoom
 		targetX = -centroid[0];
 		targetY = -centroid[1];
 		scale = 2;
+		
+		// fond des infos
+		infosFond.x = width/2+200;
+		infosFond.y = 200;
+		infosFond.attr("x", infosFond.x).attr("y", infosFond.y);
+		infosFond.attr("width", 0).attr("height", 0);
+		fondLargeur = 400;
+		fondHauteur = 260;
+		
+				
+	// DEZOOM PAYS
 	} else {
 		
-		colorerPays(pays);
-		
+		// revenir au milieu de la carte
 		targetX = -(width / 2);
 		targetY = -(height / 2);
 		scale = 1;
+		
+		// recolorer pays
+		infosPays.forEach(function(d){
+			var cible = carte.select("#"+d[0]);
+			if (typeof(cible) != 'undefined')
+			{ 
+				cible.style("fill", null);
+			}
+		});
+		
+		// pas de fond
+		fondLargeur = 0;
+		fondHauteur = 0;
+		
+		// reset les infos
+		infosTitre.text("");
+		for(var i = 0; i < nbCat; i++){	
+			infosTexte[i].text("");
+			infosValeurs[0][i] = 0;
+			legendeReligionsCarres[i].remove();
+			legendeReligionsTextes[i].remove(); 
+		}
+		donut.remove();
+		
 	}
-	
 	
 	carte.transition()
       		.duration(750)
       		.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + scale + ")translate(" + targetX + "," + targetY + ")");
     
-    
-    
-    // afficher info
-    var fondLargeur, fondHauteur;
-    var x = 300;
-    var y = 2;
-    
-    if(!isZoomed)
-	{
-		infosTexte[0].text(d.properties.name);
-		recupererInfos(d);
-		fondLargeur = 200;
-		fondHauteur = 260;
-		
-	} else {
-		fondLargeur = 0;
-		fondHauteur = 0;
-		resetInfos();
-	}
-    
     infosFond.transition()
     	.duration(750)
-    	.attr("x", x).attr("y", y)
-    	.attr("width", fondLargeur).attr("height", fondHauteur);
-	
-	
-	for(var i = 0; i < 10; i++){		
-		infosTexte[i].transition()
-	    	.duration(750)
-	    	.attr("x", x+20).attr("y", y+20);
-	    y += 20;
-	}    
-    
+    	.attr("width", fondLargeur).attr("height", fondHauteur)
+    	.each("end", afficherInfos );
     
     isZoomed = !isZoomed;
 
@@ -361,64 +404,109 @@ function click(d)
 
 
 
-function colorerPays(pays)
+
+
+
+
+
+
+
+function afficherInfos()
 {
-	pays.forEach(function(d){
-		alert(d.id);
-	});	
+	if(isZoomed)
+	{
+		infosTitre.text(paysClique.properties.name);
+		
+		queue()
+			.defer(d3.csv,  "couleursReligions.csv",	function(d, i){ test(d, i); })
+			.defer(d3.csv, 	"COWstate.csv", 			function(d){ traiterNoms(d); })
+			.defer(d3.csv, 	"WRPstate2010.csv", 		function(d){ traiterReligions(d); })
+			.awaitAll(dessinerInfos);
+	}
+	
 }
 
 
 
-function resetInfos()
+function test(d, i){
+	
+	infosValeurs[1][i] = d.name;
+	infosValeurs[2][i] = d.color;
+}
+
+function traiterNoms(d)
 {
-	for(var i = 0; i < 10; i++){		
-		infosTexte[i].text("");
+	if(d.name == paysClique.properties.name)
+	{
+		cow = d.cow;
+		isInformed = true;
 	}
 }
 
 
 
-function recupererInfos(data)
+function traiterReligions(d)
 {
-	var texte = "\n";
-	var cow = "";
-	d3.csv("COWstate.csv", function(d){	
- 		d.forEach(function(e){
- 			if(e.name == data.properties.name)
- 			{
- 				cow = e.cow;
- 			}
- 		});   	
-    });
-    
-    d3.csv("WRPstate2010.csv", function(d){
-    	d.forEach(function(e){
- 			if(cow == e.name)
- 			{
-				infosTexte[1].text("Catholic: "+e.chrstcatpct+"%");
-				infosTexte[2].text("Protestant: "+e.chrstprotpct+"%");
-				infosTexte[3].text("Orthodox: "+e.chrstorthpct+"%");
-				infosTexte[4].text("Anglican: "+e.chrstangpct+"%");
-				infosTexte[5].text("Sunni: "+e.islmsunpct+"%");
-				infosTexte[6].text("Shi'a: "+e.islmshipct+"%");
-				infosTexte[7].text("Judaism: "+e.judgenpct+"%");
-				infosTexte[8].text("Buddhism: "+e.budgenpct+"%");
-				infosTexte[9].text("Taoism: "+e.taogenpct+"%");
- 			}
- 		});
-    });
-    
-    
-    
+	if(isInformed && cow == d.name)
+	{
+		infosValeurs[0][0] = d.chrstcatpct;
+		infosValeurs[0][1] = d.chrstprotpct;
+		infosValeurs[0][2] = d.chrstorthpct;
+		infosValeurs[0][3] = d.chrstangpct;
+		infosValeurs[0][4] = d.islmsunpct;
+		infosValeurs[0][5] = d.islmshipct;
+		infosValeurs[0][6] = d.judgenpct;
+		infosValeurs[0][7] = d.budgenpct;
+		infosValeurs[0][8] = d.taogenpct;
+		
+	}
 }
 
 
 
-function ready()
+
+function dessinerInfos()
 {
 	
+	if(isInformed && isZoomed)
+	{		
+		infosTitre.attr("x", infosFond.x+20).attr("y", infosFond.y+30);   
+		
+		donut = infos.selectAll(".arc")
+		    .data(pie(infosValeurs[0]))
+			.enter().append("g")
+		    .attr("class", "arc");
+		      
+		donut.append("path")
+		    .attr("d", arc)
+		    .style("fill", function(d, i){ return "hsl("+infosValeurs[2][i]+", 80%, 50%)"; })
+		    .attr("title", function(d, i){ return infosValeurs[1][i]+": "+d.data*100+"%"; })
+		    .attr("transform", "translate("+(infosFond.x+100)+", "+(infosFond.y+120)+")")
+		    .each(function(d, i){ 
+		    	legendeReligionsCarres[i] = infos.append("svg:rect")
+		    		.attr("width", 10).attr("height", 10)
+		    		.attr("x", infosFond.x+200).attr("y", infosFond.y+52)
+		    		.style("fill", "hsl("+infosValeurs[2][i]+", 80%, 50%)");
+		    	legendeReligionsTextes[i] = infos.append("svg:text").attr("class", "infosTexte")
+		    		.attr("x", infosFond.x+220).attr("y", infosFond.y+60)
+		    		.text(infosValeurs[1][i]);
+		    	infosFond.y += 20;
+		    });	
+		    
+	} else if(!isInformed){
+		for(var i = 0; i < nbCat; i++)
+		{
+			legendeReligionsCarres[i] = infos.append("svg:rect");
+			legendeReligionsTextes[i] = infos.append("svg:text");
+		}
+		legendeReligionsTextes[0].attr("class", "infosTexte")
+			.attr("x", infosFond.x+20).attr("y", infosFond.y+60)
+		    .text("unknow");
+	}
 }
+
+
+
 
 
 </script>

@@ -84,7 +84,7 @@ JPN,Japan,,,,
 JOR,Jordan,oui,oui,oui,oui
 KAZ,Kazakhstan,,,,
 KEN,Kenya,,,,
--99,Kosovo,,,,
+UNK,Kosovo,,,,
 KWT,Kuwait,oui,oui,oui,oui
 KGZ,Kyrgyzstan,,,oui,
 LAO,Laos,,,,
@@ -118,7 +118,7 @@ NIC,Nicaragua,,,,
 NER,Niger,,,,
 NGA,Nigeria,oui,oui,,oui
 PRK,North Korea,,,,
--99,Northern Cyprus,,,,
+NCYP,Northern Cyprus,,,,
 NOR,Norway,,,oui,
 OMN,Oman,oui,oui,oui,oui
 PAK,Pakistan,oui,oui,oui,oui
