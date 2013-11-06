@@ -14,6 +14,10 @@
 		width: 100%;
 	}
 
+	#carte{
+		background-size: contain;	
+	}
+
 	.stroke {
 		fill: none;
 		stroke: #aaa;
@@ -120,11 +124,19 @@ svg.append("path")
 
 var infosPays = [];
 var carte = svg.append("svg:g").attr("id", "carte");
+var pictoPath;
+
+
+
+
+
+
 
 
 	
 queue()
 	.defer(d3.csv, 	"blasphemeInfos.csv", 		function(d, i){ traiterInfosBlaspheme(d, i); })
+	.defer(d3.csv, 	"pictoMort.csv", 			function(d){ traiterPictos(d)})
 	.defer(d3.json,	"world-countries.json", 	function(d){ dessinerCarte(d); })
 	.awaitAll(ready());
 
@@ -154,6 +166,12 @@ function traiterInfosBlaspheme(d, i) {
 
 
 
+function traiterPictos(data)
+{
+	pictoPath = data.path;
+}
+
+
 
 
 
@@ -167,6 +185,7 @@ function dessinerCarte(collection)
 		.attr("d", path)
 		.attr("id", function(d){ return d.id; })
 		.attr("title", function(d){ return d.properties.name; })
+		.attr("name", "pays")
 		.attr("class", function(d){
 			
 			var classe = ""; 
@@ -190,7 +209,7 @@ function dessinerCarte(collection)
 	collection.features.forEach(function(data) {
 		var centroid = path.centroid(data);
 		carte.append("svg:g")
-			.attr("transform", "translate("+centroid[0]+", "+centroid[1]+") scale(1)")
+			.attr("transform", "translate("+centroid[0]+", "+centroid[1]+") scale(0.4)")
 			.append("svg:path")
 				.attr("d", function(d){
 					
@@ -200,13 +219,13 @@ function dessinerCarte(collection)
 						{
 							if(infosPays[i][2])
 							{
-								forme = "M0 0 L0 -5 M2 -3 L-2 -3";
+								forme = pictoPath;
 							}
 						}
 					});
 					return forme;
 				})
-				.style("stroke", "#fff");	
+				.style("fill", "#fff");	
 	});
 	
 
@@ -242,10 +261,12 @@ function dessinerCarte(collection)
 	});
 	
 	y += 5;
+	
+	// picto mort en derniere ligne
 	legende.append("svg:path")
-		.attr("transform", "translate("+(x+5)+", "+(y+3)+") scale(2)")
-		.attr("d", "M0 0 L0 -5 M2 -3 L-2 -3")
-		.style("stroke", "#000");
+		.attr("transform", "translate("+(x+5)+", "+(y-3)+") scale(1)")
+		.attr("d", pictoPath)
+		.style("fill", "#000");
 	
 	legende.append("svg:text").attr("class", "legendeTexte")
 		.attr("x", x+20).attr("y", y)
@@ -322,48 +343,58 @@ var legendeReligionsTextes = [nbCat];
 
 
 function click(d)
-{ 	
-	paysClique = d;
-	isInformed = false;
-	
-	// zoom
-	var centroid = path.centroid(d);
-	var scale = 0;
-	var targetX, targetY;
-	
-	// fond infos
-	var fondLargeur, fondHauteur;
+{ 
 	
 	// ZOOM PAYS
 	if(!isZoomed)
 	{
+			
+		paysClique = d;
+		isInformed = false;
+		var centroid = path.centroid(paysClique);
+	
 		// couleurs pour le pays cliqué
 		d3.selectAll(".boundary").transition().duration(750).style("fill", "#aaa");
-		var cible = svg.select("#"+d.id);
+		var cible = svg.select("#"+paysClique.id);
 		cible.transition().duration(750).style("fill", "#f00");
-		
-		// centre du pays pour le zoom
-		targetX = -centroid[0];
-		targetY = -centroid[1];
-		scale = 2;
 		
 		// fond des infos
 		infosFond.x = width/2+200;
-		infosFond.y = 200;
+		infosFond.y = height/2-130;
 		infosFond.attr("x", infosFond.x).attr("y", infosFond.y);
 		infosFond.attr("width", 0).attr("height", 0);
 		fondLargeur = 400;
 		fondHauteur = 260;
-		
-				
+
+	
+		carte.transition()
+	      		.duration(750)
+	      		.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + 2 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");
+	    
+	    infosFond.transition()
+	    	.duration(750)
+	    	.attr("width", 400).attr("height", 260)
+	    	.each("end", afficherInfos );
+	}
+    
+
+}
+
+
+
+
+svg.on("click", clicSvg);
+
+function clicSvg()
+{
+	
 	// DEZOOM PAYS
-	} else {
+	if(isZoomed)
+	{
+		//var e = d3.event;
+		//paysClique = e.target;
 		
-		// revenir au milieu de la carte
-		targetX = -(width / 2);
-		targetY = -(height / 2);
-		scale = 1;
-		
+			
 		// recolorer pays
 		infosPays.forEach(function(d){
 			var cible = carte.select("#"+d[0]);
@@ -372,10 +403,6 @@ function click(d)
 				cible.style("fill", null);
 			}
 		});
-		
-		// pas de fond
-		fondLargeur = 0;
-		fondHauteur = 0;
 		
 		// reset les infos
 		infosTitre.text("");
@@ -387,19 +414,19 @@ function click(d)
 		}
 		donut.remove();
 		
+		
+		carte.transition()
+	      		.duration(750)
+	      		.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + 1 + ")translate(" + -(width / 2) + "," + -(height / 2) + ")");
+	    
+	    infosFond.transition()
+	    	.duration(750)
+	    	.attr("width", 0).attr("height", 0);
+
 	}
 	
-	carte.transition()
-      		.duration(750)
-      		.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + scale + ")translate(" + targetX + "," + targetY + ")");
-    
-    infosFond.transition()
-    	.duration(750)
-    	.attr("width", fondLargeur).attr("height", fondHauteur)
-    	.each("end", afficherInfos );
-    
-    isZoomed = !isZoomed;
-
+	isZoomed = !isZoomed;
+	
 }
 
 
