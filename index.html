@@ -301,7 +301,7 @@ function over(d)
 		var cible = this.svg.select("#"+d.id);
 		cible.transition()
 			.duration(100)
-			.style("fill", "#f00");
+			.style("fill", "#c00");
 	}
 }
 
@@ -334,7 +334,7 @@ var paysClique;
 var cow = ""; var isInformed;
 var pie = d3.layout.pie().sort(null).value(function(d) { return d; });    
 var arc = d3.svg.arc().outerRadius(20).innerRadius(60);
-var donut;
+var donut = infos.selectAll(".arc");
 var legendeReligionsCarres = [nbCat];
 var legendeReligionsTextes = [nbCat];
 		
@@ -443,7 +443,7 @@ function afficherInfos()
 	if(isZoomed)
 	{
 		infosTitre.text(paysClique.properties.name);
-		
+				
 		queue()
 			.defer(d3.csv,  "couleursReligions.csv",	function(d, i){ test(d, i); })
 			.defer(d3.csv, 	"COWstate.csv", 			function(d){ traiterNoms(d); })
@@ -495,9 +495,10 @@ function traiterReligions(d)
 function dessinerInfos()
 {
 	
+	infosTitre.attr("x", infosFond.x+20).attr("y", infosFond.y+30); 
+	
 	if(isInformed && isZoomed)
-	{		
-		infosTitre.attr("x", infosFond.x+20).attr("y", infosFond.y+30);   
+	{		  
 		
 		donut = infos.selectAll(".arc")
 		    .data(pie(infosValeurs[0]))
