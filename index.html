@@ -69,6 +69,16 @@
 		font-family: sans-serif;
 		fill: #555;
 	}
+	
+	.capitaleTexte {
+		font-size: .5em;
+		font-family: sans-serif;
+		fill: #555;
+	}
+
+	.capitalePoint {
+		fill: #555;	
+	}
 
 	</style>
 	<script src="d3.js"></script>
@@ -129,12 +139,18 @@ svg.append("path")
 	.attr("class", "graticule")
 	.attr("d", path);
 
+
+
+
+
+
 var infosPays = [];
 var carte = svg.append("svg:g").attr("id", "carte");
+var capitalePoint;
+var capitaleTexte;
 var pictoPath;
 var isZoomed = false;
 var categories;
-
 
 
 // INTERACTION
@@ -157,6 +173,8 @@ var donut = infos.selectAll(".arc");
 var legendeReligionsCarres = [nbCat];
 var legendeReligionsTextes = [nbCat];
 
+
+		
 
 
 
@@ -330,6 +348,15 @@ function ready()
 
 
 
+
+
+
+
+
+
+
+
+
 /////////////////////////////////////
 // INTERACTION /////////////////////
 ///////////////////////////////////
@@ -433,6 +460,8 @@ function clicSvg()
 			legendeReligionsTextes[i].remove(); 
 		}
 		donut.remove();
+		capitaleTexte.remove();
+		capitalePoint.remove();
 			
 		carte.transition()
       		.duration(750)
@@ -469,6 +498,7 @@ function afficherInfos()
 			.defer(d3.csv,  "couleursReligions.csv",	function(d, i){ test(d, i); })
 			.defer(d3.csv, 	"COWstate.csv", 			function(d){ traiterNoms(d); })
 			.defer(d3.csv, 	"WRPstate2010.csv", 		function(d){ traiterReligions(d); })
+			.defer(d3.csv ,	"listeCapitalesPosition.csv", 	function(d){ dessinerCapitales(d); })
 			.awaitAll(dessinerInfos);
 	
 }
@@ -562,6 +592,42 @@ function dessinerInfos()
 }
 
 
+
+function dessinerCapitales(data)
+{ 
+	
+	
+	if(data.country == paysClique.properties.name)
+	{
+		
+		// conversion des latitudes et longitudes
+		var lat = parseFloat(data.lat.substring(0, data.lat.length-1));
+		var sens = data.lat.substring(data.lat.length-1, data.lat.length);
+		if(sens == "S"){ lat *= -1; }
+		var long = parseFloat(data.long.substring(0, data.long.length-1));
+		sens = data.long.substring(data.long.length-1, data.long.length);
+		if(sens == "W"){ long *= -1; }
+		
+		var coordonnees = [ long, lat ];
+		var traductionCoor = projection(coordonnees);
+		var x = traductionCoor[0];
+		var y = traductionCoor[1];
+	
+		capitalePoint = carte.append("rect").attr("class", "capitalePoint");
+		capitaleTexte = carte.append("svg:text").attr("class", "capitaleTexte");
+	
+		// dessiner un point
+		capitalePoint.attr("width", 3).attr("height", 3)
+			.attr("x", x).attr("y", y);
+			
+	
+		// dessiner le nom de la capitale
+		capitaleTexte.attr("x", x+6).attr("y", y+4)
+			.text(data.capital);
+
+	}
+	
+}
 
 
 
