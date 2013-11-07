@@ -6,16 +6,16 @@
 	<style>
 
 	body {
-		background: #fff;
+		background: #CBE9E9 none;
+		font-size:2em;
 	}
 	
 	svg {
-		background: #fff;
 		width: 100%;
 	}
 
 	#carte{
-		background-size: contain;	
+		background: #CBE9E9 none;
 	}
 
 	.stroke {
@@ -36,17 +36,15 @@
 		stroke-width: .2px;
 	}
 	
-	.NNN{ fill: #bbb; }
+	.noPenalty 				{ fill: #eee; }
+	.blaspheme 				{ fill: #A39D4D; }
+	.apostasie 				{ fill: #AF70A6; }
+	.diffamation 			{ fill: #1EBCC3; }
+	.blasphemeApostasie 	{ fill: #DC3D2F; }
+	.apostasieDiffamation 	{ fill: #3F80DA; }
+	.blasphemeDiffamation 	{ fill: #28A370; }
+	.allPenalties 			{ fill: #15342E; }
 	
-	.ONN{ fill: hsl(43, 50%, 50%); }
-	.NON{ fill: hsl(149, 50%, 50%); }
-	.NNO{ fill: hsl(350, 50%, 50%); }
-	
-	.OON{ fill: hsl(43, 60%, 40%); }
-	.NOO{ fill: hsl(149, 60%, 40%); }
-	.ONO{ fill: hsl(350, 60%, 40%); }
-	
-	.OOO{ fill: #000; }
 
 	.legendeTexte {
 		font-size: .6em;
@@ -124,7 +122,7 @@ svg.append("defs").append("path")
 	.datum({type: "Sphere"})
 	.attr("id", "sphere")
 	.attr("d", path)
-	.style("fill", "#fff");
+	.style("fill", "#CBE9E9");
 
 svg.append("use")
 	.attr("class", "stroke")
@@ -205,9 +203,40 @@ function traiterInfosBlaspheme(d, i) {
 			nomClasse += "N";	
 		}
 	});	
+
+	switch (nomClasse) {
+		case "NNN": 
+			nomClasse = "noPenalty";
+			break;
+		case "ONN": 
+			nomClasse = "blaspheme";
+			break;
+		case "NON": 
+			nomClasse = "apostasie";
+			break;
+		case "NNO": 
+			nomClasse = "diffamation";
+			break;
+		case "OON": 
+			nomClasse = "blasphemeApostasie";
+			break;
+		case "NOO": 
+			nomClasse = "apostasieDiffamation";
+			break;
+		case "ONO": 
+			nomClasse = "blasphemeDiffamation";
+			break;
+		case "OOO": 
+			nomClasse = "allPenalties";
+			break;
+	}
 	
 	var mort = false;
 	if(d.mort == "oui"){ mort = true; }
+
+
+
+
 
 	infosPays.push([ d.iso, nomClasse, mort ]);
 	
@@ -369,7 +398,6 @@ function over(d)
 		var cible = this.svg.select("#"+d.id);
 		cible.transition()
 			.duration(100)
-			.style("fill", "#c00");
 	}
 }
 
@@ -382,7 +410,6 @@ function out(d)
 		var cible = this.svg.select("#"+d.id);
 		cible.transition()
 			.duration(100)
-			.style("fill", null);		
 	}
 }
 
@@ -404,7 +431,7 @@ function click(d)
 		window.location.hash = paysClique.id;
 	
 		// couleurs pour le pays cliqué
-		d3.selectAll(".boundary").transition().duration(750).style("fill", "#aaa");
+//		d3.selectAll(".boundary").transition().duration(750).style("fill", "#aaa");
 		var cible = svg.select("#"+paysClique.id);
 		cible.transition().duration(750).style("fill", "#f00");
 		
