@@ -61,7 +61,7 @@
 	}
 	
 	.infosTitreCat {
-		fill: #000;	
+		fill: #555;	
 	}
 	
 	.infosTexte {
@@ -311,7 +311,7 @@ function dessinerCarte(collection)
 function ready()
 {
 	var hash = window.location.hash;	
-	if(hash != "#" && hash != "")
+	if(hash != "#" && hash != "" && hash != "general")
 	{
 		d3.json("world-countries.json", function(collection){ 
 			
@@ -383,11 +383,9 @@ function click(d)
 		
 		// fond des infos
 		infosFond.x = width/2+200;
-		infosFond.y = height/2-130;
+		infosFond.y = height/2-135;
 		infosFond.attr("x", infosFond.x).attr("y", infosFond.y);
 		infosFond.attr("width", 0).attr("height", 0);
-		fondLargeur = 400;
-		fondHauteur = 260;
 	
 		carte.transition()
       		.duration(750)
@@ -395,7 +393,7 @@ function click(d)
 	    
 	    infosFond.transition()
 	    	.duration(750)
-	    	.attr("width", 400).attr("height", 260)
+	    	.attr("width", 400).attr("height", 270)
 	    	.each("end", afficherInfos );
 	    	
 	}
@@ -414,7 +412,7 @@ function clicSvg()
 	if(isZoomed)
 	{
 		
-		window.location.hash = "";
+		window.location.hash = "general";
 			
 		// recolorer pays
 		infosPays.forEach(function(d){
@@ -455,12 +453,16 @@ function clicSvg()
 
 function afficherInfos()
 {
+	
+		// titre
 		infosTitre[0].text(paysClique.properties.name);
+		
+		// rappel de la penalisation
 		var cible = document.getElementById(paysClique.id);
 		var classe = cible.className.baseVal.split(" ", 2)[1];
 		
 		categories.forEach(function(d, i){
-			if(classe == d[0]){ infosTitre[1].text(d[1]); }
+			if(classe == d[0]){ infosTitre[1].text("Pénalisations : "+d[1]); }
 		});
 	
 		queue()
@@ -518,7 +520,7 @@ function dessinerInfos()
 {
 	
 	infosTitre[0].attr("x", infosFond.x+20).attr("y", infosFond.y+30); 
-	infosTitre[1].attr("x", infosFond.x+20).attr("y", infosFond.y+240); 
+	infosTitre[1].attr("x", infosFond.x+20).attr("y", infosFond.y+250); 
 	
 	if(isInformed && isZoomed)
 	{		  
