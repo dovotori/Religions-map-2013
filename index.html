@@ -128,10 +128,7 @@ svg.append("path")
 var infosPays = [];
 var carte = svg.append("svg:g").attr("id", "carte");
 var pictoPath;
-
-
-
-
+var isZoomed = false;
 
 
 
@@ -279,7 +276,16 @@ function dessinerCarte(collection)
 
 function ready()
 {
-	
+	var hash = window.location.hash;	
+	if(hash != "#" && hash != "")
+	{
+		d3.json("world-countries.json", function(collection){ 
+			
+			collection.features.forEach(function(d){
+				if(hash == "#"+d.id){ click(d); isZoomed = !isZoomed; }	
+			});
+		});
+	}
 }
 
 
@@ -323,7 +329,7 @@ function out(d)
 
 
 
-var isZoomed = false;
+
 var infos = svg.append("svg:g").attr("id", "infos");
 var infosFond = infos.append("svg:rect").attr("id", "infosFond").style("fill", "#eee");
 var infosTitre = infos.append("svg:text").attr("class", "infosTitre");
@@ -350,9 +356,9 @@ function click(d)
 	
 	// ZOOM PAYS
 	if(!isZoomed)
-	{
-			
+	{	
 		paysClique = d;
+		window.location.hash = paysClique.id;
 		isInformed = false;
 		var centroid = path.centroid(paysClique);
 	
@@ -368,7 +374,6 @@ function click(d)
 		infosFond.attr("width", 0).attr("height", 0);
 		fondLargeur = 400;
 		fondHauteur = 260;
-
 	
 		carte.transition()
 	      		.duration(750)
@@ -394,8 +399,7 @@ function clicSvg()
 	// DEZOOM PAYS
 	if(isZoomed)
 	{
-		//var e = d3.event;
-		//paysClique = e.target;
+		window.location.hash = "";
 		
 			
 		// recolorer pays
@@ -443,8 +447,6 @@ function clicSvg()
 
 function afficherInfos()
 {
-	if(isZoomed)
-	{
 		infosTitre.text(paysClique.properties.name);
 				
 		queue()
@@ -452,7 +454,7 @@ function afficherInfos()
 			.defer(d3.csv, 	"COWstate.csv", 			function(d){ traiterNoms(d); })
 			.defer(d3.csv, 	"WRPstate2010.csv", 		function(d){ traiterReligions(d); })
 			.awaitAll(dessinerInfos);
-	}
+	
 	
 }
 
@@ -543,6 +545,8 @@ function dessinerInfos()
 </script>
 </body>
 </html>
+
+
 
 
 
