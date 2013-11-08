@@ -6,12 +6,12 @@
 	<style>
 
 	body {
+		text-align: center;
 		background: #555;
 	}
 	
 	svg {
 		background: #555;
-		width: 100%;
 	}
 
 	.graticule {
@@ -48,7 +48,7 @@
 	.infosTitre {
 		font-size: .8em;
 		font-family: sans-serif;
-		fill: #aaa;
+		fill: #bbb;
 	}
 	
 	.infosTitreCat {
@@ -86,8 +86,7 @@
 
 
 
-var width = window.innerWidth, 
-	height = window.innerHeight;
+var width, height;
 
 var projection = d3.geo
 	//.azimuthalEqualArea()
@@ -98,16 +97,13 @@ var projection = d3.geo
 	//.conicEquidistant()
 	//.orthographic()
 	//.eisenlohr()
-	.scale(100)
-	.translate([width / 2, height / 2]);
+	
 
 var path = d3.geo.path().projection(projection);
 
 var graticule = d3.geo.graticule();
 
-var svg = d3.select("body").append("svg")
-	.attr("width", width)
-	.attr("height", height);
+var svg = d3.select("body").append("svg");
 
 svg.append("defs").append("path")
 	.datum({type: "Sphere"})
@@ -122,7 +118,7 @@ svg.append("use")
 	.attr("class", "fill")
 	.attr("xlink:href", "#sphere");
 
-svg.append("path")
+var dessinGraticule = svg.append("path")
 	.datum(graticule)
 	.attr("class", "graticule")
 	.attr("d", path);
@@ -176,7 +172,7 @@ for(var i = 0; i < nbCat; i++)
 
 
 
-
+resize();
 	
 queue()
 	.defer(d3.csv, 	"blasphemeInfos.csv", 		function(d, i){ traiterInfosBlaspheme(d, i); })
@@ -267,6 +263,7 @@ function dessinerCarte(collection)
 		carte.append("svg:g")
 			.attr("transform", "translate("+centroid[0]+", "+centroid[1]+") scale(0.4)")
 			.append("svg:path")
+				.attr("class", "pictosMort")
 				.attr("d", function(d){
 					
 					var forme = "";
@@ -464,34 +461,34 @@ function zoomPays()
 {
 
 	// ZOOM PAYS	
-		clicPays = true;	
-		isInformed = false;
-		var centroid = path.centroid(paysClique);
-		window.location.hash = paysClique.id;
+	clicPays = true;	
+	isInformed = false;
+	var centroid = path.centroid(paysClique);
+	window.location.hash = paysClique.id;
+
+	// couleurs pour le pays cliqué
+	/*d3.selectAll(".boundary").transition().duration(750).style("fill", "#aaa");
+	var cible = svg.select("#"+paysClique.id);
+	cible.transition().duration(750).style("fill", "#f00");*/
 	
-		// couleurs pour le pays cliqué
-		/*d3.selectAll(".boundary").transition().duration(750).style("fill", "#aaa");
-		var cible = svg.select("#"+paysClique.id);
-		cible.transition().duration(750).style("fill", "#f00");*/
-		
-		// fond des infos
-		infosFond.x = width/2+200;
-		infosFond.y = height/2-135;
-		infosFond.attr("x", infosFond.x).attr("y", infosFond.y);
-		infosFond.attr("width", 0).attr("height", 0);
-	
-		carte.transition()
-      		.duration(750)
-      		.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + 2 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");
-	    
-	    infosFond.transition()
-	    	.duration(750)
-	    	.attr("width", 400).attr("height", 270)
-	    	.each("end", afficherInfos );
-	    	
-	    oldPaysCliqueId = paysClique.id;
-	    
-	    isZoomed = true;
+	// fond des infos
+	infosFond.x = width/2+200;
+	infosFond.y = height/2-135;
+	infosFond.attr("x", infosFond.x).attr("y", infosFond.y);
+	infosFond.attr("width", 0).attr("height", 0);
+
+	carte.transition()
+     		.duration(750)
+     		.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + 2 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");
+    
+    infosFond.transition()
+    	.duration(750)
+    	.attr("width", 400).attr("height", 270)
+    	.each("end", afficherInfos );
+    	
+    oldPaysCliqueId = paysClique.id;
+    
+    isZoomed = true;
 	
 }
 
@@ -519,23 +516,23 @@ function resetInfos()
 function afficherInfos()
 {
 	
-		// titre
-		infosTitre[0].text(paysClique.properties.name);
-		
-		// rappel de la penalisation
-		var cible = document.getElementById(paysClique.id);
-		var classe = cible.className.baseVal.split(" ", 2)[1];
-		
-		categories.forEach(function(d, i){
-			if(classe == d[0]){ infosTitre[1].text("Pénalisations : "+d[1]); }
-		});
+	// titre
+	infosTitre[0].text(paysClique.properties.name);
 	
-		queue()
-			.defer(d3.csv,  "couleursReligions.csv",	function(d, i){ test(d, i); })
-			.defer(d3.csv, 	"COWstate.csv", 			function(d){ traiterNoms(d); })
-			.defer(d3.csv, 	"WRPstate2010.csv", 		function(d){ traiterReligions(d); })
-			//.defer(d3.csv ,	"listeCapitalesPosition.csv", 	function(d){ dessinerCapitales(d); })
-			.awaitAll(dessinerInfos);
+	// rappel de la penalisation
+	var cible = document.getElementById(paysClique.id);
+	var classe = cible.className.baseVal.split(" ", 2)[1];
+	
+	categories.forEach(function(d, i){
+		if(classe == d[0]){ infosTitre[1].text("Pénalisations : "+d[1]); }
+	});
+
+	queue()
+		.defer(d3.csv,  "couleursReligions.csv",	function(d, i){ test(d, i); })
+		.defer(d3.csv, 	"COWstate.csv", 			function(d){ traiterNoms(d); })
+		.defer(d3.csv, 	"WRPstate2010.csv", 		function(d){ traiterReligions(d); })
+		//.defer(d3.csv ,	"listeCapitalesPosition.csv", 	function(d){ dessinerCapitales(d); })
+		.awaitAll(dessinerInfos);
 	
 }
 
@@ -664,6 +661,45 @@ function dessinerCapitales(data)
 	}
 	
 }
+
+
+
+
+
+
+////////////////////////////
+//// RESIZE ///////////////
+//////////////////////////
+
+d3.select(window).on('resize', resize);
+
+function resize() {
+
+    width = window.innerWidth; 
+	height = window.innerHeight;
+
+    // update projection
+    projection
+        .translate([width / 2, height / 2])
+        .scale(width / 10);
+
+	
+	svg
+		.attr("width", width)
+		.attr("height", height);
+
+    carte
+        .style('width', width)
+        .style('height', height);
+        
+	
+    dessinGraticule.attr('d', path);
+    carte.selectAll("path").attr('d', path);
+	
+}
+
+
+
 
 
 
