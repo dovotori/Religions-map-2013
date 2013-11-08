@@ -17,7 +17,7 @@
 	.graticule {
 		fill: none;
 		stroke: #aaa;
-		stroke-width: .2px;
+		stroke-width: 0.02em;
 	}
 	
 	#sphere{
@@ -27,7 +27,7 @@
 	.boundary {
 		fill: none;
 		stroke: #fff;
-		stroke-width: .2px;
+		stroke-width: 0.03em;
 	}
 	
 	.noPenalty				{ fill: #bbb; }
@@ -42,13 +42,13 @@
 	.legendeTexte {
 		font-size: .8em;
 		font-family: sans-serif;
-		fill: #aaa;
+		fill: #ccc;
 	}
 	
 	.infosTitre {
 		font-size: .8em;
 		font-family: sans-serif;
-		fill: #bbb;
+		fill: #ccc;
 	}
 	
 	.infosTitreCat {
@@ -183,6 +183,10 @@ queue()
 
 
 
+
+
+
+
 function traiterInfosBlaspheme(d, i) {
 
 	var categories = [ d.blasphème, d.apostasie, d.diffamation ];
@@ -259,9 +263,10 @@ function dessinerCarte(collection)
 	
 	// PICTOS
 	collection.features.forEach(function(data) {
+		
 		var centroid = path.centroid(data);
 		carte.append("svg:g")
-			.attr("transform", "translate("+centroid[0]+", "+centroid[1]+") scale(0.4)")
+			.attr("transform", "translate("+centroid[0]+", "+centroid[1]+") scale(2.8)")
 			.append("svg:path")
 				.attr("class", "pictosMort")
 				.attr("d", function(d){
@@ -278,7 +283,8 @@ function dessinerCarte(collection)
 					});
 					return forme;
 				})
-				.style("fill", "#fff");	
+				.style("stroke-width", 0.5)
+				.style("stroke", "#fff");	
 	});
 	
 
@@ -319,9 +325,10 @@ function dessinerCarte(collection)
 	
 	// picto mort en derniere ligne
 	legende.append("svg:path")
-		.attr("transform", "translate("+(x+5)+", "+(y-3)+") scale(1)")
+		.attr("transform", "translate("+(x+5)+", "+(y-3)+") scale(3)")
 		.attr("d", pictoPath)
-		.style("fill", "#000");
+		.style("stroke-width", 0.5)
+		.style("stroke", "#fff");
 	
 	legende.append("svg:text").attr("class", "legendeTexte")
 		.attr("x", x+20).attr("y", y)
@@ -343,6 +350,8 @@ function ready()
 			});
 		});
 	}
+	
+	
 }
 
 
@@ -528,7 +537,7 @@ function afficherInfos()
 	});
 
 	queue()
-		.defer(d3.csv,  "couleursReligions.csv",	function(d, i){ test(d, i); })
+		.defer(d3.csv,  "couleursReligions.csv",	function(d, i){ recupererCouleurReligion(d, i); })
 		.defer(d3.csv, 	"COWstate.csv", 			function(d){ traiterNoms(d); })
 		.defer(d3.csv, 	"WRPstate2010.csv", 		function(d){ traiterReligions(d); })
 		//.defer(d3.csv ,	"listeCapitalesPosition.csv", 	function(d){ dessinerCapitales(d); })
@@ -538,7 +547,7 @@ function afficherInfos()
 
 
 
-function test(d, i){
+function recupererCouleurReligion(d, i){
 	
 	infosValeurs[1][i] = d.name;
 	infosValeurs[2][i] = d.color;
@@ -695,7 +704,7 @@ function resize() {
 	
     dessinGraticule.attr('d', path);
     carte.selectAll("path").attr('d', path);
-	
+
 }
 
 
