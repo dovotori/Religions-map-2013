@@ -26,17 +26,17 @@
 
 	.boundary {
 		fill: none;
-		stroke: #fff;
+		stroke: #55;
 		stroke-width: 0.03em;
 	}
 	
 	.noPenalty				{ fill: #bbb; }
-	.blaspheme				{ fill: hsl(180, 50%, 50%); }
-	.apostasie				{ fill: hsl(190, 50%, 50%); }
-	.diffamation			{ fill: hsl(200, 50%, 50%); }
-	.blasphemeApostasie		{ fill: hsl(303, 50%, 50%); }
-	.apostasieDiffamation	{ fill: hsl(326, 50%, 50%); }
-	.blasphemeDiffamation	{ fill: hsl(349, 50%, 50%); }	
+	.blaspheme				{ fill: #89D0F0; }
+	.apostasie				{ fill: #DB8CB7; }
+	.diffamation			{ fill: #7EC9D0; }
+	.blasphemeApostasie		{ fill: hsl(349, 30%, 50%); }
+	.apostasieDiffamation	{ fill: hsl(349, 60%, 50%); }
+	.blasphemeDiffamation	{ fill: hsl(349, 80%, 50%); }	
 	.allPenalties			{ fill: #000; }
 
 	.legendeTexte {
@@ -48,7 +48,7 @@
 	.infosTitre {
 		font-size: .8em;
 		font-family: sans-serif;
-		fill: #ccc;
+		fill: #aaa;
 	}
 	
 	.infosTitreCat {
@@ -475,10 +475,12 @@ function zoomPays()
 	var centroid = path.centroid(paysClique);
 	window.location.hash = paysClique.id;
 
+	/*
 	// couleurs pour le pays cliqué
-	/*d3.selectAll(".boundary").transition().duration(750).style("fill", "#aaa");
+	d3.selectAll(".boundary").transition().duration(750).style("fill", "#aaa");
 	var cible = svg.select("#"+paysClique.id);
-	cible.transition().duration(750).style("fill", "#f00");*/
+	cible.transition().duration(750).style("fill", "#f00");
+	*/
 	
 	// fond des infos
 	infosFond.x = width/2+200;
