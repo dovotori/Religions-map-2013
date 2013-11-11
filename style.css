@@ -1,0 +1,83 @@
+
+body {
+	text-align: center;
+	background: #555;
+	margin: 0; padding: 0;
+}
+
+svg {
+	background: #555;
+	width: 100%;
+	margin: 0; padding: 0;
+	overflow: hidden;
+}
+
+.graticule {
+	fill: none;
+	stroke: #aaa;
+	stroke-width: 0.02em;
+}
+
+#sphere{
+	fill: #555;	
+}
+
+.boundary {
+	fill: none;
+	stroke: #555;
+	stroke-width: 0.03em;
+}
+
+.noPenalty						{ fill: #bbb; }
+.blaspheme						{ fill: #89D0F0; }
+.apostasie						{ fill: #DB8CB7; }
+.diffamation					{ fill: #7EC9D0; }
+.blasphemeApostasie		{ fill: hsl(349, 30%, 50%); }
+.apostasieDiffamation	{ fill: hsl(349, 60%, 50%); }
+.blasphemeDiffamation	{ fill: hsl(349, 80%, 50%); }	
+.allPenalties					{ fill: #000; }
+
+.legendeTexte {
+	font-size: 70%;
+	font-family: sans-serif;
+	fill: #fff;
+}
+
+.infosTitre {
+	font-size: 70%;
+	font-family: sans-serif;
+	fill: #aaa;
+}
+
+.infosTitreCat {
+	fill: #555;	
+}
+
+.infosTexte {
+	font-size: 70%;
+	font-family: sans-serif;
+	fill: #333;
+}
+
+#infosFond {
+	fill: #eee;
+}
+
+.capitaleTexte {
+	font-size: 40%;
+	font-family: sans-serif;
+	fill: #fff;
+}
+
+.capitalePoint {
+	fill: #fff;	
+}
+
+.pictosMort {
+	stroke-width: 0.03em;
+	stroke: #fff;	
+}
+
+
+
+
