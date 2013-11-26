@@ -50,9 +50,7 @@ function setup()
 	var pictoPath;
 	var categories;
 	var coordonneesCapitale;
-	var pictoMortLegende = svg.append("svg:path")
-				.style("stroke-width", "0.04%")
-				.style("stroke", "#fff");
+	var pictoMortLegende = svg.append("svg:path");
 	
 	// INTERACTION
 	var paysClique, oldPaysCliqueId;
@@ -113,8 +111,6 @@ function setup()
 		}
 		
 		resize();
-
-
 	}
 
 	queue()
@@ -201,11 +197,7 @@ function setup()
 			.on("mouseover", function(d){ hoverPays(d); })
 			.on("mouseout", function(d){ outPays(d); })
 			.on("click", function(d){ clickPays(d); });
-			
 		
-	
-	
-			
 	}
 	
 
@@ -217,9 +209,9 @@ function setup()
 			var x = "1%";
 			var y = "20%";
 			var legende = svg.append("svg:g").attr("class", "legende");
-			legende.append("svg:text").attr("class", "infosTitre")
-					.attr("x", x).attr("y", y)
-					.text("Penalisation par la loi");
+			//legende.append("svg:text").attr("class", "infosTitre")
+			//		.attr("x", x).attr("y", y)
+			//		.text("Penalisation par la loi");
 			y = plusPct(y, 2);
 					
 			categories = [ [ "noPenalty", 					"none"], 
@@ -246,7 +238,7 @@ function setup()
 			legende.append("svg:text").attr("class", "legendeTexte")
 				.attr("x", plusPct(x, 2)).attr("y", plusPct(y, 1))
 				.text("puni de mort");			
-			pictoMortLegende.attr("d", pictoPath);
+			pictoMortLegende.attr("d", pictoPath).attr("class", "pictosMort");
 	}	
 	
 	
@@ -427,10 +419,10 @@ function setup()
 		});
 	
 		queue()
-			.defer(d3.csv,  "couleursReligions.csv",			function(d, i){ recupererCouleurReligion(d, i); })
-			.defer(d3.csv, 	"COWstate.csv", 							function(d){ traiterNoms(d); })
-			.defer(d3.csv, 	"WRPstate2010.csv", 					function(d){ traiterReligions(d); })
-			.defer(d3.csv ,	"listeCapitalesPosition.csv", function(d){ dessinerCapitales(d); })
+			.defer(d3.csv,  "couleursReligions.csv",		function(d, i){ recupererCouleurReligion(d, i); })
+			.defer(d3.csv, 	"COWstate.csv", 				function(d){ traiterNoms(d); })
+			.defer(d3.csv, 	"WRPstate2010.csv", 			function(d){ traiterReligions(d); })
+			.defer(d3.csv ,	"listeCapitalesPosition.csv", 	function(d){ dessinerCapitales(d); })
 			.awaitAll(dessinerInfos);
 		
 	}

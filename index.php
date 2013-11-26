@@ -125,7 +125,7 @@ code carte
 }
 
 #conteneurCarte #svg {
-	background: #555;
+	background: #888;
 	width: 100%;
 	margin: 0; padding: 0;
 	overflow: hidden;
@@ -133,19 +133,25 @@ code carte
 
 .graticule {
 	fill: none;
-	stroke: #aaa;
+	stroke: #fff;
 	stroke-width: 0.02em;
 }
 
 #sphere{
-	fill: #555;	
+	fill: #888;	
 }
 
 .boundary {
 	fill: none;
-	stroke: #555;
+	stroke: #888;
 	stroke-width: 0.03em;
 }
+
+
+.boundary:hover {
+	cursor: pointer;
+}
+
 
 .noPenalty						{ fill: #bbb; }
 .blaspheme						{ fill: #89D0F0; }
@@ -156,6 +162,7 @@ code carte
 .blasphemeDiffamation			{ fill: hsl(349, 80%, 50%); }	
 .allPenalties					{ fill: #000; }
 
+
 .legendeTexte {
 	font-size: 1em;
 	font-family: sans-serif;
@@ -163,7 +170,7 @@ code carte
 }
 
 .infosTitre {
-	font-size: 70%;
+	font-size: 1.4em;
 	font-family: sans-serif;
 	fill: #aaa;
 }
@@ -173,7 +180,7 @@ code carte
 }
 
 .infosTexte {
-	font-size: 70%;
+	font-size: 1em;
 	font-family: sans-serif;
 	fill: #333;
 }
@@ -222,7 +229,6 @@ code carte
 			<p>Based on <br/>Pew Research, Religion and Public Life Project, 21 novembre 2012 <a href="http://www.pewforum.org/2012/11/21/laws-penalizing-blasphemy-apostasy-and-defamation-of-religion-are-widespread/">source</a><br/>Zeev Maoz and Errol A. Henderson. “The World Religion Dataset, 1945-2010: Logic, Estimates, and trends.” International Interactions, 39(3) <a href="http://www.correlatesofwar.org/COW2%20Data/Religion/Religion.htm">source</a><br/>
 			Powered by <a href="http://d3js.org/">D3.js</a> de  Mike Bostock</p>
 	</div>
-
 
 <!-- 
 fin code carte
