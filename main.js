@@ -3,23 +3,21 @@ window.addEventListener("load", setup, false);
 
 
 
-
 function setup()
 {
 
 	var width, height;
 	
 	var projection = d3.geo
-		//.azimuthalEqualArea()
-		.mercator()
-		//.conicEquidistant()
-		//.orthographic()
+		//.azimuthalEqualArea();
+		.mercator();
+		//.conicEquidistant();
+		//.orthographic();
 	
 	var path = d3.geo.path().projection(projection);
 	
 	var graticule = d3.geo.graticule();
 	
-	//var svg = d3.select("body").append("svg");
 	var svg = d3.select("#svg");
 	
 	svg.append("defs").append("path")
@@ -60,7 +58,7 @@ function setup()
 	var paysClique, oldPaysCliqueId;
 	var isZoomed = false;
 	var infos = svg.append("svg:g").attr("id", "infos");
-	var infosFond = infos.append("svg:rect").attr("id", "infosFond");
+	var infosFond = infos.append("svg:rect").attr("id", "infosFond").attr("width", "0%").attr("height", "0%");
 	var infosTitre = [2];
 	infosTitre[0] = infos.append("svg:text").attr("class", "infosTitre");
 	infosTitre[1] = infos.append("svg:text").attr("class", "infosTitre infosTitreCat");
@@ -132,7 +130,7 @@ function setup()
 	
 	
 	function traiterInfosBlaspheme(data) {
-	
+		
 		data.forEach(function(d){
 			
 			var categories = [ d.blasphème, d.apostasie, d.diffamation ];
@@ -224,14 +222,14 @@ function setup()
 					.text("Penalisation par la loi");
 			y = plusPct(y, 2);
 					
-			categories = [ [ "noPenalty", 					"aucune"], 
-										[ "blaspheme", 						"blasphème" ], 
-										[ "diffamation", 					"diffamation" ],
-										[ "apostasie", 						"apostasie" ],  
-										[ "blasphemeApostasie", 	"blasphème + apostasie" ], 
-										[ "apostasieDiffamation", "apostasie + diffamation" ], 
-										[ "blasphemeDiffamation", "blasphème + diffamation"], 
-										[ "allPenalties", 				"la totale"] ];
+			categories = [ [ "noPenalty", 					"none"], 
+							[ "blaspheme", 						"blasphème" ], 
+							[ "diffamation", 					"diffamation" ],
+							[ "apostasie", 						"apostasie" ],  
+							[ "blasphemeApostasie", 	"blasphème + apostasie" ], 
+							[ "apostasieDiffamation", "apostasie + diffamation" ], 
+							[ "blasphemeDiffamation", "blasphème + diffamation"], 
+							[ "allPenalties", 				"All penalties"] ];
 			
 			categories.forEach(function(d){
 				legende.append("svg:rect")
@@ -382,10 +380,10 @@ function setup()
 	     		.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + 2 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");
 	    
 		infosFond.attr("x", "60%").attr("y", "40%");
-	  infosFond.transition()
+	  	infosFond.transition()
 			.duration(750)
-	    .attr("width", "30%").attr("height", "40%")
-	    .each("end", afficherInfos );
+	    	.attr("width", "30%").attr("height", "40%")
+	    	.each("end", afficherInfos );
 	    	
 	  oldPaysCliqueId = paysClique.id;
 	    
@@ -596,16 +594,16 @@ function setup()
 	function resize() {
 	
 	    width = window.innerWidth; 
-			height = window.innerHeight;
+		height = window.innerHeight;
 	
 	    // update projection
 	    projection
 	        .translate([width / 2, height / 2])
 	        .scale(width / 10);
 	
-			svg
-				.attr("width", width)
-				.attr("height", height);
+		svg
+			.attr("width", width)
+			.attr("height", height);
 		
 	    carte
 	        .style('width', width)
@@ -615,39 +613,39 @@ function setup()
 	    dessinGraticule.attr('d', path);
 	    carte.selectAll("path").attr('d', path);
 	    
-			paysPenaliseParMort.forEach(function(d){
-				var centroid = path.centroid(d);
-				carte.append("svg:g")
-					.attr("transform", "translate("+centroid[0]+", "+centroid[1]+") scale("+width/500+")")
-					.append("svg:path")
-					.attr("class", "pictosMort")
-					.attr("d", pictoPath);
-			});
+		paysPenaliseParMort.forEach(function(d){
+			var centroid = path.centroid(d);
+			carte.append("svg:g")
+				.attr("transform", "translate("+centroid[0]+", "+centroid[1]+") scale("+width/500+")")
+				.append("svg:path")
+				.attr("class", "pictosMort")
+				.attr("d", pictoPath);
+		});
+
 	
+		var posX = width*0.01*1.5;
+		var posY = height*0.01*54.5;
 		
-			var posX = width*0.01*1.5;
-			var posY = height*0.01*54.5;
-			
-			pictoMortLegende.attr("transform", "translate("+posX+", "+posY+") scale(4)");
-			
-			posX = width*0.01*2;
-			posY = width*0.01*6;
-			arc.outerRadius(posX).innerRadius(posY);
-			
-			if(isZoomed)
-			{
-								
-				posX = width*0.01*68;
-				posY = height*0.01*60;
-	    	donut.selectAll("path").attr("d", arc).attr("transform", "translate("+posX+", "+posY+")");
-				
-				var traductionCoor = projection(coordonneesCapitale);
-				var x = traductionCoor[0];
-				var y = traductionCoor[1];
-				capitalePoint.attr("x", x).attr("y", y);
-				capitaleTexte.attr("x", x+6).attr("y", y+4);
+		pictoMortLegende.attr("transform", "translate("+posX+", "+posY+") scale(4)");
 		
-			}
+		posX = width*0.01*2;
+		posY = width*0.01*6;
+		arc.outerRadius(posX).innerRadius(posY);
+		
+		if(isZoomed)
+		{
+							
+			posX = width*0.01*68;
+			posY = height*0.01*60;
+    	donut.selectAll("path").attr("d", arc).attr("transform", "translate("+posX+", "+posY+")");
+			
+			var traductionCoor = projection(coordonneesCapitale);
+			var x = traductionCoor[0];
+			var y = traductionCoor[1];
+			capitalePoint.attr("x", x).attr("y", y);
+			capitaleTexte.attr("x", x+6).attr("y", y+4);
+	
+		}
 	}
 
 

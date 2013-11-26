@@ -1,11 +1,11 @@
 
-body {
+#conteneurCarte {
 	text-align: center;
 	background: #555;
 	margin: 0; padding: 0;
 }
 
-svg {
+#conteneurCarte #svg {
 	background: #555;
 	width: 100%;
 	margin: 0; padding: 0;
