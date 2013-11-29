@@ -124,7 +124,7 @@ code carte
 	margin: 0; padding: 0;
 }
 
-#conteneurCarte #svg {
+#conteneurCarte #svgCarte {
 	background: #888;
 	width: 100%;
 	margin: 0; padding: 0;
@@ -167,6 +167,10 @@ code carte
 	font-size: 1em;
 	font-family: sans-serif;
 	fill: #fff;
+}
+
+.legendeTexte:hover {
+	cursor: pointer;	
 }
 
 .infosTitre {
@@ -221,7 +225,7 @@ code carte
 	<h2>Pénalisation de la loi</h2>
 
 	<div id="conteneurCarte">
-		<svg id="svg"></svg>
+		<svg id="svgCarte"></svg>
 			
 	</div>
 	
@@ -229,6 +233,7 @@ code carte
 			<p>Based on <br/>Pew Research, Religion and Public Life Project, 21 novembre 2012 <a href="http://www.pewforum.org/2012/11/21/laws-penalizing-blasphemy-apostasy-and-defamation-of-religion-are-widespread/">source</a><br/>Zeev Maoz and Errol A. Henderson. “The World Religion Dataset, 1945-2010: Logic, Estimates, and trends.” International Interactions, 39(3) <a href="http://www.correlatesofwar.org/COW2%20Data/Religion/Religion.htm">source</a><br/>
 			Powered by <a href="http://d3js.org/">D3.js</a> de  Mike Bostock</p>
 	</div>
+
 
 <!-- 
 fin code carte

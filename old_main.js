@@ -18,7 +18,7 @@ function setup()
 	
 	var graticule = d3.geo.graticule();
 	
-	var svg = d3.select("#svgCarte");
+	var svg = d3.select("#svg");
 	
 	svg.append("defs").append("path")
 		.datum({type: "Sphere"})
@@ -41,8 +41,6 @@ function setup()
 	
 	
 	
-	// LANGUE
-	var LANGUE = "FR";
 	
 	
 	var infosPays = [];
@@ -52,11 +50,10 @@ function setup()
 	var pictoPath;
 	var categories;
 	var coordonneesCapitale;
-	var pictoMortLegende;
+	var pictoMortLegende = svg.append("svg:path");
 	
 	// INTERACTION
 	var paysClique, oldPaysCliqueId;
-	var legendeClique = false;
 	var isZoomed = false;
 	var infos = svg.append("svg:g").attr("id", "infos");
 	var infosFond = infos.append("svg:rect").attr("id", "infosFond").attr("width", "0%").attr("height", "0%");
@@ -69,8 +66,7 @@ function setup()
 	for(var i = 0; i < nbCat; i++){
 		infosTexte[i] = infos.append("svg:text").attr("class", "infosTexte");
 	}
-	var infosValeurs = [3]; 
-	infosValeurs[0] = []; infosValeurs[1] = []; infosValeurs[2] = [];
+	var infosValeurs = [3]; infosValeurs[0] = []; infosValeurs[1] = []; infosValeurs[2] = [];
 	var cow = ""; var isInformed;
 	var pie = d3.layout.pie().sort(null).value(function(d) { return d; });    
 	var arc = d3.svg.arc();
@@ -83,9 +79,8 @@ function setup()
 		legendeReligionsTextes[i] = infos.append("svg:text");
 	}
 	
-	var paysPenaliseParMort = [];
-	var pictosMortCarte = [];
- 			
+	var paysPenaliseParMort = [];	
+			
 	
 	
 
@@ -98,40 +93,12 @@ function setup()
 		d3.json(url, function(d){ callback(null, d); });
 	}
 
-
 	var ready = function(error, results) {
-
-		alert("ready");
 		traiterInfosBlaspheme(results[0]);
 		pictoPath = results[1][0].path;
-		dessinerCarte(results[2], results[3]);
+		dessinerCarte(results[2]);
 		dessinerLegende();		
 		
-		lireHashDemarrage();
-		
-		resize();
-	}
-
-
-
-	
-	queue()
-		.defer(lireCsv, "blasphemeInfos.csv")
-		.defer(lireCsv, "pictoMort.csv")
-		.defer(lireJson, "world-countries.json")
-		.defer(lireCsv, "pays-fr-en-de-es-iso2-iso3-id")
-		.awaitAll(ready);
-	
-
-
-
-	
-
-	
-
-
-	function lireHashDemarrage()
-	{
 		var hash = window.location.hash;	
 		if(hash != "#" && hash != "" && hash != "general")
 		{
@@ -142,7 +109,18 @@ function setup()
 				});
 			});
 		}
+		
+		resize();
 	}
+
+	queue()
+		.defer(lireCsv, "blasphemeInfos.csv")
+		.defer(lireCsv, "pictoMort.csv")
+		.defer(lireJson, "world-countries.json")
+		.awaitAll(ready);
+
+	
+
 	
 	
 	
@@ -189,9 +167,8 @@ function setup()
 	
 	
 	
-	function dessinerCarte(collection, conversionNoms)
+	function dessinerCarte(collection)
 	{
-
 
 		// CARTE
 		carte.selectAll("path")
@@ -199,25 +176,7 @@ function setup()
 			.enter().append("svg:path")
 			.attr("d", path)
 			.attr("id", function(d){ return d.id; })
-			.attr("title", function(d)
-			{ 
-
-				if(LANGUE == "FR")
-				{
-					var nomPays = "inconnu";
-					conversionNoms.forEach(function(pa){
-
-						if(d.properties.name.toLowerCase() == pa.pays_en.toLowerCase())
-						{
-							nomPays = pa.pays_fr;
-						}
-
-					});
-					return nomPays;
-				} else {
-					return d.properties.name; 
-				}
-			})
+			.attr("title", function(d){ return d.properties.name; })
 			.attr("class", function(d){
 				
 				var classe = "";
@@ -236,83 +195,50 @@ function setup()
 				return "boundary "+classe;
 			})
 			.on("mouseover", function(d){ hoverPays(d); })
-			.on("mouseout", function(d)	{ outPays(d); })
-			.on("click", function(d)	{ clickPays(d); });
+			.on("mouseout", function(d){ outPays(d); })
+			.on("click", function(d){ clickPays(d); });
 		
 	}
 	
-
-
-
 
 	
 		
 	function dessinerLegende()
 	{
 
-		var x = "1%";
-		var y = "20%";
-		var legende = svg.append("svg:g").attr("class", "legende");
-
-		// fond
-		legende.append("svg:rect").style("fill", "#888")
-			.attr("x", x).attr("y", y)
-			.attr("width", "16%").attr("height", "38%");
-		y = plusPct(y, 2);
-		x = plusPct(x, 1);
-				
-
-		categories = [ [ "noPenalty", 				"none",						 	"aucune" ], 
-						[ "blaspheme", 				"blasphemy",					"blasphème" ], 
-						[ "diffamation", 			"diffamation",					"diffamation" ],
-						[ "apostasie", 				"apostasy",						"apostasie" ],  
-						[ "blasphemeApostasie", 	"blasphemy + apostasy",			"blasphème + apostasie" ], 
-						[ "apostasieDiffamation", 	"apostasy + diffamation",		"apostasie + diffamation" ], 
-						[ "blasphemeDiffamation", 	"blasphemy + diffamation",		"blasphème + diffamation" ], 
-						[ "allPenalties", 			"all penalties",				"toutes les pénalisations" ] ];
-	
-
-		categories.forEach(function(d, i){
-			legende.append("svg:rect")
-				.attr("width", "1%").attr("height", "1%")
-				.attr("x", x).attr("y", y)
-				.attr("class", d[0]);
+			var x = "1%";
+			var y = "20%";
+			var legende = svg.append("svg:g").attr("class", "legende");
+			//legende.append("svg:text").attr("class", "infosTitre")
+			//		.attr("x", x).attr("y", y)
+			//		.text("Penalisation par la loi");
+			y = plusPct(y, 2);
+					
+			categories = [ [ "noPenalty", 					"none"], 
+							[ "blaspheme", 						"blasphème" ], 
+							[ "diffamation", 					"diffamation" ],
+							[ "apostasie", 						"apostasie" ],  
+							[ "blasphemeApostasie", 	"blasphème + apostasie" ], 
+							[ "apostasieDiffamation", "apostasie + diffamation" ], 
+							[ "blasphemeDiffamation", "blasphème + diffamation"], 
+							[ "allPenalties", 				"All penalties"] ];
+			
+			categories.forEach(function(d){
+				legende.append("svg:rect")
+					.attr("width", "1%").attr("height", "1%")
+					.attr("x", x).attr("y", y)
+					.attr("class", d[0]);
+				legende.append("svg:text").attr("class", "legendeTexte")
+					.attr("x", plusPct(x, 2)).attr("y", plusPct(y, 1))
+					.text(d[1]);
+				y = plusPct(y, 4);
+			});
+			
+			// texte mort en derniere ligne
 			legende.append("svg:text").attr("class", "legendeTexte")
 				.attr("x", plusPct(x, 2)).attr("y", plusPct(y, 1))
-				.attr("title", d[0])
-				.text(function(){
-					var texte = "";
-					if(LANGUE == "FR")
-					{
-						texte = d[2];
-					} else {
-						texte = d[1];
-					}
-					return texte;
-				})
-				.on("click", function(d){ clickLegende(this); });
-			y = plusPct(y, 4);
-		});
-		
-		// texte mort en derniere ligne
-		legende.append("svg:text").attr("class", "legendeTexte")
-			.attr("x", plusPct(x, 2)).attr("y", plusPct(y, 1))
-			.attr("title", "puni de mort")
-			.text(function(){
-					var texte = "";
-					if(LANGUE == "FR")
-					{
-						texte = "puni de mort";
-					} else {
-						texte = "penalize from death";
-					}
-					return texte;
-			})
-			.on("click", function(d){ clickLegende(this); });
-
-		// picto legende
-		pictoMortLegende = legende.append("svg:path").attr("d", pictoPath).attr("class", "pictosMort");
-
+				.text("puni de mort");			
+			pictoMortLegende.attr("d", pictoPath).attr("class", "pictosMort");
 	}	
 	
 	
@@ -324,31 +250,6 @@ function setup()
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	
 	
 	
@@ -388,16 +289,11 @@ function setup()
 	
 	
 	function clickPays(d)
-	{ 	
+	{ 		
 		paysClique = d;	
 	}
 	
 	
-	
-	function clickLegende(d)
-	{
-		legendeClique = d.getAttribute("title");
-	}
 	
 	
 	
@@ -406,34 +302,23 @@ function setup()
 	
 	function clicSvg()
 	{
+		
 		resetInfos();
-
-
-		if(d3.event.target.id != null && d3.event.target.id.length == 3 && (oldPaysCliqueId != paysClique.id || !isZoomed))
+		
+		if(d3.event.target.id.length == 3 && (oldPaysCliqueId != paysClique.id || !isZoomed))
 		{
+			
 			zoomPays();
-		    	
-		} else if(legendeClique != false)
-		{
-			colorerEnFonctionLegende();
-
+			    	
 		} else {
-
+		
 			dezoomPays();
 		    	
 		}
 		
-		legendeClique = false;
-		
 	}
 	
 	
-
-
-
-
-
-
 	
 	
 	function dezoomPays()
@@ -442,12 +327,17 @@ function setup()
 		window.location.hash = "general";
 			
 		// recolorer pays
-		carte.selectAll(".boundary").style("fill", null);	
-		afficherPictosMortCarte();
+		/*infosPays.forEach(function(d){
+			var cible = carte.select("#"+d[0]);
+			if (typeof(cible) != 'undefined')
+			{ 
+				cible.style("fill", null);
+			}
+		});*/	
 			
 		carte.transition()
 	     		.duration(750)
-	     		.attr("transform", "translate(50%, 50%)scale(" + 1 + ")");
+	     		.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + 1 + ")translate(" + -(width / 2) + "," + -(height / 2) + ")");
 	    
 	    infosFond.transition()
 	    	.duration(750)
@@ -458,12 +348,6 @@ function setup()
 	}
 	
 	
-
-
-
-
-
-
 	
 	
 	function zoomPays()
@@ -473,12 +357,19 @@ function setup()
 		clicPays = true;	
 		isInformed = false;
 		var centroid = path.centroid(paysClique);
-
-		changeHash();
-
+		window.location.hash = paysClique.id;
+	
+		/*
+		// couleurs pour le pays cliqué
+		d3.selectAll(".boundary").transition().duration(750).style("fill", "#aaa");
+		var cible = svg.select("#"+paysClique.id);
+		cible.transition().duration(750).style("fill", "#f00");
+		*/
+		
+	
 		carte.transition()
 	     		.duration(750)
-	     		.attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")scale(" + 2 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");
+	     		.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + 2 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");
 	    
 		infosFond.attr("x", "60%").attr("y", "40%");
 	  	infosFond.transition()
@@ -489,27 +380,10 @@ function setup()
 	  oldPaysCliqueId = paysClique.id;
 	    
 	  isZoomed = true;
-		
 	}
 	
 	
 	
-
-
-	function changeHash()
-	{
-		// empeche le jump lié au hash
-		history.pushState(null, null, '#general');
-		if(history.pushState) {
-		    history.pushState(null, null, "#"+paysClique.id);
-		}
-		else {
-		    window.location.hash = "#"+paysClique.id;
-		}
-	}
-
-
-
 	
 	function resetInfos()
 	{
@@ -529,34 +403,22 @@ function setup()
 	
 	
 	
-
-
-
 	
 	function afficherInfos()
 	{
 		
+		// titre
+		infosTitre[0].text(paysClique.properties.name);
 		
 		// rappel de la penalisation
 		var cible = document.getElementById(paysClique.id);
 		var classe = cible.className.baseVal.split(" ", 2)[1];
 		
 		categories.forEach(function(d, i){
-			if(classe == d[0])
-			{ 
-				if(LANGUE == "FR")
-				{
-					infosTitre[1].text("Pénalisations : "+d[2]);
-				} else {
-					infosTitre[1].text("Penalisation : "+d[1]);
-				}
-			}
+			if(classe == d[0]){ infosTitre[1].text("Pénalisations : "+d[1]); }
 		});
-
-		
 	
 		queue()
-			.defer(d3.csv, "pays-fr-en-de-es-iso2-iso3-id",	function(d){ recupererTitre(d); })
 			.defer(d3.csv,  "couleursReligions.csv",		function(d, i){ recupererCouleurReligion(d, i); })
 			.defer(d3.csv, 	"COWstate.csv", 				function(d){ traiterNoms(d); })
 			.defer(d3.csv, 	"WRPstate2010.csv", 			function(d){ traiterReligions(d); })
@@ -566,46 +428,17 @@ function setup()
 	}
 	
 	
-
-
-
-	function recupererTitre(d)
-	{
-		if(LANGUE == "FR")
-		{
-
-
-			if(paysClique.properties.name.toLowerCase() == d.pays_en.toLowerCase())
-			{	
-				infosTitre[0].text(d.pays_fr);	
-			}
-
-		} else {
-			
-			infosTitre[0].text(paysClique.properties.name);
-
-		}
-	}
-
-
-
 	
 	
 	
 	function recupererCouleurReligion(d, i){
 		
-		if(LANGUE == "FR")
-		{
-			infosValeurs[1][i] = d.nom;
-		} else {
-			infosValeurs[1][i] = d.name;
-		}
+		infosValeurs[1][i] = d.name;
 		infosValeurs[2][i] = d.color;
 	}
 	
 	
 	
-
 	
 	
 	function traiterNoms(d)
@@ -619,7 +452,6 @@ function setup()
 	
 	
 	
-
 	
 	
 	function traiterReligions(d)
@@ -642,10 +474,7 @@ function setup()
 	}
 	
 	
-
-
 	
-
 	
 	function dessinerInfos()
 	{
@@ -693,24 +522,10 @@ function setup()
 			
 			legendeReligionsTextes[0].attr("class", "infosTexte")
 				.attr("x", pctX).attr("y", plusPct(pctY, 4))
-			    .text(function(d){
-			    	var texte = "";
-			    	if(LANGUE == "FR")
-			    	{
-			    		texte = "données inconnues";
-			    	} else {
-			    		texte = "unknow";
-			    	}
-			    	return texte;
-			    });
+			    .text("unknow");
 		
 		}
 	}
-
-
-
-
-
 
 	
 	function plusPct(cible, ajout)
@@ -722,13 +537,6 @@ function setup()
 	
 	}	
 	
-
-
-
-
-
-
-
 	function dessinerCapitales(data)
 	{ 
 		
@@ -764,85 +572,6 @@ function setup()
 		
 	}
 	
-
-
-
-	
-	
-	function colorerEnFonctionLegende()
-	{
-		
-		pictosMortCarte.forEach(function(pic){
-			pic.remove();
-		});	
-		
-		// colorer pays
-		var pays = carte.selectAll(".boundary");
-		pays.transition().duration(300).style("fill", "#999");
-		pays[0].forEach(function(pa){
-			
-			var nomClasse = pa.getAttribute("class").split(" ")[1];
-
-			if(nomClasse == legendeClique)
-			{
-				carte.selectAll("#"+pa.getAttribute("id")).transition().duration(300).style("fill", null);	
-			}
-		
-		});
-		
-		
-		if(legendeClique == "puni de mort")
-		{
-			afficherPictosMortCarte();
-			paysPenaliseParMort.forEach(function(pa){
-
-				var cible = carte.selectAll("#"+pa.id); 	// selectAll car 2 Somalie et 2 Afghanistan sur carte ????
-				cible.transition().duration(300).style("fill", null);
-
-			});
-		}
-		
-				
-	}
-	
-	
-
-
-
-	
-	function afficherPictosMortCarte()
-	{
-		// supprime pour eviter doublons
-		pictosMortCarte.forEach(function(pic){
-			pic.remove();
-		});
-
-		paysPenaliseParMort.forEach(function(d, i){
-			var centroid = path.centroid(d);
-			pictosMortCarte[i] = carte.append("svg:g")
-				.attr("transform", "translate("+centroid[0]+", "+centroid[1]+") scale("+width/500+")")
-				.append("svg:path")
-				.attr("class", "pictosMort")
-				.attr("d", pictoPath);
-		});
-
-	}
-	
-	
-	
-	
-	
-
-
-
-
-
-
-
-
-
-	
-	
 	
 	
 	
@@ -858,7 +587,7 @@ function setup()
 	
 	    width = window.innerWidth; 
 		height = window.innerHeight;
-
+	
 	    // update projection
 	    projection
 	        .translate([width / 2, height / 2])
@@ -876,10 +605,17 @@ function setup()
 	    dessinGraticule.attr('d', path);
 	    carte.selectAll("path").attr('d', path);
 	    
-		afficherPictosMortCarte();
+		paysPenaliseParMort.forEach(function(d){
+			var centroid = path.centroid(d);
+			carte.append("svg:g")
+				.attr("transform", "translate("+centroid[0]+", "+centroid[1]+") scale("+width/500+")")
+				.append("svg:path")
+				.attr("class", "pictosMort")
+				.attr("d", pictoPath);
+		});
 
 	
-		var posX = width*0.01*2.5;
+		var posX = width*0.01*1.5;
 		var posY = height*0.01*54.5;
 		
 		pictoMortLegende.attr("transform", "translate("+posX+", "+posY+") scale(4)");
@@ -893,7 +629,7 @@ function setup()
 							
 			posX = width*0.01*68;
 			posY = height*0.01*60;
-    		donut.selectAll("path").attr("d", arc).attr("transform", "translate("+posX+", "+posY+")");
+    	donut.selectAll("path").attr("d", arc).attr("transform", "translate("+posX+", "+posY+")");
 			
 			var traductionCoor = projection(coordonneesCapitale);
 			var x = traductionCoor[0];

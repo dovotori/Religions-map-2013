@@ -1,12 +1,10 @@
-
 #conteneurCarte {
 	text-align: center;
-	background: #555;
 	margin: 0; padding: 0;
 }
 
-#conteneurCarte #svg {
-	background: #555;
+#conteneurCarte #svgCarte {
+	background: #888;
 	width: 100%;
 	margin: 0; padding: 0;
 	overflow: hidden;
@@ -14,37 +12,48 @@
 
 .graticule {
 	fill: none;
-	stroke: #aaa;
+	stroke: #fff;
 	stroke-width: 0.02em;
 }
 
 #sphere{
-	fill: #555;	
+	fill: #888;	
 }
 
 .boundary {
 	fill: none;
-	stroke: #555;
+	stroke: #888;
 	stroke-width: 0.03em;
 }
+
+
+.boundary:hover {
+	cursor: pointer;
+}
+
 
 .noPenalty						{ fill: #bbb; }
 .blaspheme						{ fill: #89D0F0; }
 .apostasie						{ fill: #DB8CB7; }
 .diffamation					{ fill: #7EC9D0; }
-.blasphemeApostasie		{ fill: hsl(349, 30%, 50%); }
-.apostasieDiffamation	{ fill: hsl(349, 60%, 50%); }
-.blasphemeDiffamation	{ fill: hsl(349, 80%, 50%); }	
+.blasphemeApostasie				{ fill: hsl(349, 30%, 50%); }
+.apostasieDiffamation			{ fill: hsl(349, 60%, 50%); }
+.blasphemeDiffamation			{ fill: hsl(349, 80%, 50%); }	
 .allPenalties					{ fill: #000; }
 
+
 .legendeTexte {
-	font-size: 70%;
+	font-size: 1em;
 	font-family: sans-serif;
 	fill: #fff;
 }
 
+.legendeTexte:hover {
+	cursor: pointer;	
+}
+
 .infosTitre {
-	font-size: 70%;
+	font-size: 1.4em;
 	font-family: sans-serif;
 	fill: #aaa;
 }
@@ -54,7 +63,7 @@
 }
 
 .infosTexte {
-	font-size: 70%;
+	font-size: 1em;
 	font-family: sans-serif;
 	fill: #333;
 }
@@ -78,6 +87,16 @@
 	stroke: #fff;	
 }
 
+#sources {
+	color: #aaa;
+	text-align: left;
+	font-size: 0.8em;
+	line-height: 1.3em;
+	padding: 1%;
+}
 
+#sources a {
+	color: #555;
+}
 
 
