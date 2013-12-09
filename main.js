@@ -42,7 +42,7 @@ function setup()
 	
 	
 	// LANGUE
-	var LANGUE = "FR";
+	var LANGUE = "ENG";
 	
 	
 	var infosPays = [];
@@ -101,7 +101,6 @@ function setup()
 
 	var ready = function(error, results) {
 
-		alert("ready");
 		traiterInfosBlaspheme(results[0]);
 		pictoPath = results[1][0].path;
 		dessinerCarte(results[2], results[3]);
@@ -254,22 +253,34 @@ function setup()
 		var y = "20%";
 		var legende = svg.append("svg:g").attr("class", "legende");
 
-		// fond
+		// fond et titre
 		legende.append("svg:rect").style("fill", "#888")
 			.attr("x", x).attr("y", y)
-			.attr("width", "16%").attr("height", "38%");
-		y = plusPct(y, 2);
+			.attr("width", "16%").attr("height", "42%");
+		y = plusPct(y, 4);
+		legende.append("svg:text").attr("class", "legendeTitre")
+			.attr("x", plusPct(x, 1)).attr("y", y)
+			.text(function(){
+				var titreLegende = "";
+				if(LANGUE == "FR"){ 
+					titreLegende = "Pénalisation par la loi";
+				} else {
+					titreLegende = "Penalize by law";
+				}
+				return titreLegende;	
+			});
 		x = plusPct(x, 1);
+		y = plusPct(y, 2);
 				
 
-		categories = [ [ "noPenalty", 				"none",						 	"aucune" ], 
-						[ "blaspheme", 				"blasphemy",					"blasphème" ], 
-						[ "diffamation", 			"diffamation",					"diffamation" ],
-						[ "apostasie", 				"apostasy",						"apostasie" ],  
-						[ "blasphemeApostasie", 	"blasphemy + apostasy",			"blasphème + apostasie" ], 
-						[ "apostasieDiffamation", 	"apostasy + diffamation",		"apostasie + diffamation" ], 
-						[ "blasphemeDiffamation", 	"blasphemy + diffamation",		"blasphème + diffamation" ], 
-						[ "allPenalties", 			"all penalties",				"toutes les pénalisations" ] ];
+		categories = [ [ "noPenalty", 				"none",						 	"aucune",							"aucune pénalisation par la loi" ], 
+						[ "diffamation", 			"defamation of religions",		"diffamation des religions",		"" ],
+						[ "blaspheme", 				"blasphemy",					"blasphème",						"discours jugé irrévérencieux à l'égard de ce qui est vénéré par les religions ou de ce qui est considéré comme sacré" ],
+						[ "apostasie", 				"apostasy",						"apostasie",						"le fait de renoncer volontairement à sa religion" ],  
+						[ "blasphemeDiffamation", 	"blasphemy + defamation",		"blasphème + diffamation",			"" ],
+						[ "apostasieDiffamation", 	"apostasy + defamation",		"apostasie + diffamation",			"" ],  
+						[ "blasphemeApostasie", 	"blasphemy + apostasy",			"blasphème + apostasie",			"" ], 
+						[ "allPenalties", 			"all penalties",				"toutes les pénalisations",			"" ] ];
 	
 
 		categories.forEach(function(d, i){
@@ -279,7 +290,8 @@ function setup()
 				.attr("class", d[0]);
 			legende.append("svg:text").attr("class", "legendeTexte")
 				.attr("x", plusPct(x, 2)).attr("y", plusPct(y, 1))
-				.attr("title", d[0])
+				.attr("name", d[0])
+				.attr("title", d[3])
 				.text(function(){
 					var texte = "";
 					if(LANGUE == "FR")
@@ -297,14 +309,15 @@ function setup()
 		// texte mort en derniere ligne
 		legende.append("svg:text").attr("class", "legendeTexte")
 			.attr("x", plusPct(x, 2)).attr("y", plusPct(y, 1))
-			.attr("title", "puni de mort")
+			.attr("title", "passible de mort")
+			.attr("name", "passible de mort")
 			.text(function(){
 					var texte = "";
 					if(LANGUE == "FR")
 					{
-						texte = "puni de mort";
+						texte = "passible de mort";
 					} else {
-						texte = "penalize from death";
+						texte = "punishable by death";
 					}
 					return texte;
 			})
@@ -396,7 +409,7 @@ function setup()
 	
 	function clickLegende(d)
 	{
-		legendeClique = d.getAttribute("title");
+		legendeClique = d.getAttribute("name");
 	}
 	
 	
@@ -406,8 +419,8 @@ function setup()
 	
 	function clicSvg()
 	{
-		resetInfos();
 
+		resetInfos();
 
 		if(d3.event.target.id != null && d3.event.target.id.length == 3 && (oldPaysCliqueId != paysClique.id || !isZoomed))
 		{
@@ -473,12 +486,14 @@ function setup()
 		clicPays = true;	
 		isInformed = false;
 		var centroid = path.centroid(paysClique);
+		// recolorer pays
+		carte.selectAll(".boundary").style("fill", null);
 
 		changeHash();
 
 		carte.transition()
-	     		.duration(750)
-	     		.attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")scale(" + 2 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");
+     		.duration(750)
+     		.attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")scale(" + 2 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");
 	    
 		infosFond.attr("x", "60%").attr("y", "40%");
 	  	infosFond.transition()
@@ -486,9 +501,9 @@ function setup()
 	    	.attr("width", "30%").attr("height", "40%")
 	    	.each("end", afficherInfos );
 	    	
-	  oldPaysCliqueId = paysClique.id;
+		oldPaysCliqueId = paysClique.id;
 	    
-	  isZoomed = true;
+		isZoomed = true;
 		
 	}
 	
@@ -776,22 +791,58 @@ function setup()
 			pic.remove();
 		});	
 		
-		// colorer pays
+		// colorer pays en gris
 		var pays = carte.selectAll(".boundary");
 		pays.transition().duration(300).style("fill", "#999");
+
+
+
+
+
+
 		pays[0].forEach(function(pa){
 			
 			var nomClasse = pa.getAttribute("class").split(" ")[1];
 
-			if(nomClasse == legendeClique)
+			var colorBlaspheme = "#55D0FF"; 
+			var colorApostasie = "#DB8CB7"; 
+			var colorDiffamation = "#7EC9D0";
+
+			
+
+			switch(legendeClique)
 			{
-				carte.selectAll("#"+pa.getAttribute("id")).transition().duration(300).style("fill", null);	
+				case "diffamation":
+					if(nomClasse == legendeClique || nomClasse == "apostasieDiffamation" || nomClasse == "blasphemeDiffamation")
+					{
+						carte.selectAll("#"+pa.getAttribute("id")).transition().duration(300).style("fill", colorDiffamation);	
+					}
+					break;
+				case "blaspheme":
+					if(nomClasse == legendeClique || nomClasse == "blasphemeApostasie" || nomClasse == "blasphemeDiffamation")
+					{
+						carte.selectAll("#"+pa.getAttribute("id")).transition().duration(300).style("fill", colorBlaspheme);	
+					}
+					break;
+				case "apostasie":
+					if(nomClasse == legendeClique || nomClasse == "apostasieDiffamation" || nomClasse == "blasphemeApostasie")
+					{
+						carte.selectAll("#"+pa.getAttribute("id")).transition().duration(300).style("fill", colorApostasie);	
+					}
+					break;
+				default:
+					if(nomClasse == legendeClique)
+					{
+						carte.selectAll("#"+pa.getAttribute("id")).transition().duration(300).style("fill", null);	
+					}
+					break;
 			}
+
 		
 		});
 		
-		
-		if(legendeClique == "puni de mort")
+
+		if(legendeClique == "passible de mort" || legendeClique == "penalize by law")
 		{
 			afficherPictosMortCarte();
 			paysPenaliseParMort.forEach(function(pa){
@@ -880,7 +931,7 @@ function setup()
 
 	
 		var posX = width*0.01*2.5;
-		var posY = height*0.01*54.5;
+		var posY = height*0.01*58.5;
 		
 		pictoMortLegende.attr("transform", "translate("+posX+", "+posY+") scale(4)");
 		

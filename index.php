@@ -154,7 +154,7 @@ code carte
 
 
 .noPenalty						{ fill: #bbb; }
-.blaspheme						{ fill: #89D0F0; }
+.blaspheme						{ fill: #55D0FF; }
 .apostasie						{ fill: #DB8CB7; }
 .diffamation					{ fill: #7EC9D0; }
 .blasphemeApostasie				{ fill: hsl(349, 30%, 50%); }
@@ -162,6 +162,12 @@ code carte
 .blasphemeDiffamation			{ fill: hsl(349, 80%, 50%); }	
 .allPenalties					{ fill: #000; }
 
+
+.legendeTitre {
+	font-size: 1em;
+	font-family: sans-serif;
+	fill: #fff;
+}
 
 .legendeTexte {
 	font-size: 1em;
@@ -222,7 +228,7 @@ code carte
 
 	</style>
 	
-	<h2>Pénalisation de la loi</h2>
+	<h2>Planisphère des atteintes à la religion</h2>
 
 	<div id="conteneurCarte">
 		<svg id="svgCarte"></svg>
