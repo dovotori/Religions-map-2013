@@ -85,33 +85,6 @@
 <script type="text/javascript" src="queue.js"></script>
 <script type="text/javascript" src="main.js"></script>
 
-
-
-
-<body class="home fr">
-	
-	<script type="text/javascript">
-	jQuery(document).ready(function($jQ){
-
-		jQuery(".hasSubmenu").hover(function(){
-   			jQuery(this).children(".submenus").show(0);
-		}, function(){
-   			jQuery(".submenus").hide(0);			
-		});
-
-	});
-</script>
-
-
-	<?php	
-		include("menu.php");
-	?>
-	
-	
-	<br>
-
-
-
 <!-- 
 code carte
 -->
@@ -121,14 +94,25 @@ code carte
 
 #conteneurCarte {
 	text-align: center;
-	margin: 0; padding: 0;
+	margin: 0 0 0; padding: 0;
 }
 
 #conteneurCarte #svgCarte {
-	background: #888;
+background: #efefef none;
 	width: 100%;
 	margin: 0; padding: 0;
 	overflow: hidden;
+}
+
+h2 {
+	width:970px;
+	text-align:left;
+	margin:0 auto;
+	padding:20px;
+	color:#000;
+	position: relative;
+	font-family:"BebasNeueRegular";
+	font-size:3em;
 }
 
 .graticule {
@@ -138,7 +122,7 @@ code carte
 }
 
 #sphere{
-	fill: #888;	
+	fill: #efefef;	
 }
 
 .boundary {
@@ -153,26 +137,28 @@ code carte
 }
 
 
-.noPenalty						{ fill: #bbb; }
-.blaspheme						{ fill: #55D0FF; }
-.apostasie						{ fill: #DB8CB7; }
-.diffamation					{ fill: #7EC9D0; }
-.blasphemeApostasie				{ fill: hsl(349, 30%, 50%); }
-.apostasieDiffamation			{ fill: hsl(349, 60%, 50%); }
-.blasphemeDiffamation			{ fill: hsl(349, 80%, 50%); }	
-.allPenalties					{ fill: #000; }
+.noPenalty						{ fill: #dfdfdf; }
+
+.diffamation					{ fill: #568cac; }
+.blaspheme						{ fill: #5656bf; }
+.apostasie						{ fill: #8080a0; }
+.blasphemeDiffamation			{ fill: #804ab4; }
+.apostasieDiffamation			{ fill: #ac568c; }
+.blasphemeApostasie				{ fill: #bf5656; }
+
+.allPenalties					{ fill: #533a67; }
 
 
 .legendeTitre {
 	font-size: 1em;
 	font-family: sans-serif;
-	fill: #fff;
+	fill: #000;
 }
 
 .legendeTexte {
 	font-size: 1em;
 	font-family: sans-serif;
-	fill: #fff;
+	fill: #000;
 }
 
 .legendeTexte:hover {
@@ -186,7 +172,7 @@ code carte
 }
 
 .infosTitreCat {
-	fill: #555;	
+	fill: #fff;	
 }
 
 .infosTexte {
@@ -227,6 +213,36 @@ code carte
 }
 
 	</style>
+
+
+	<script type="text/javascript">
+	jQuery(document).ready(function($jQ){
+
+		jQuery(".hasSubmenu").hover(function(){
+   			jQuery(this).children(".submenus").show(0);
+		}, function(){
+   			jQuery(".submenus").hide(0);			
+		});
+
+	});
+</script>
+
+
+
+
+<body class="home fr">
+	
+
+	<?php	
+		include("menu.php");
+	?>
+	
+	
+	<br>
+
+
+
+
 	
 	<h2>Planisphère des atteintes à la religion</h2>
 

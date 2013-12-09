@@ -254,7 +254,7 @@ function setup()
 		var legende = svg.append("svg:g").attr("class", "legende");
 
 		// fond et titre
-		legende.append("svg:rect").style("fill", "#888")
+		legende.append("svg:rect").style("fill", "#eee")
 			.attr("x", x).attr("y", y)
 			.attr("width", "16%").attr("height", "42%");
 		y = plusPct(y, 4);
@@ -793,7 +793,7 @@ function setup()
 		
 		// colorer pays en gris
 		var pays = carte.selectAll(".boundary");
-		pays.transition().duration(300).style("fill", "#999");
+		pays.transition().duration(300).style("fill", "#efefef");
 
 
 
@@ -804,9 +804,12 @@ function setup()
 			
 			var nomClasse = pa.getAttribute("class").split(" ")[1];
 
-			var colorBlaspheme = "#55D0FF"; 
-			var colorApostasie = "#DB8CB7"; 
-			var colorDiffamation = "#7EC9D0";
+
+
+			var colorDiffamation 	= "#568cac" 
+			var colorBlaspheme 		= "#5656bf"; 
+			var colorApostasie 		= "#8080a0"; 
+			
 
 			
 
@@ -913,7 +916,7 @@ function setup()
 	    // update projection
 	    projection
 	        .translate([width / 2, height / 2])
-	        .scale(width / 10);
+	        .scale(width / 7);
 	
 		svg
 			.attr("width", width)
