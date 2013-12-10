@@ -90,11 +90,20 @@ code carte
 -->
 
 	<style>
+
+
+#cp, #sources {
+	width: 970px;
+	text-align: left;
+	margin: 0px auto;
+}
+
+
 	
 
 #conteneurCarte {
 	text-align: center;
-	margin: 0 0 0; padding: 0;
+	margin: 0; padding: 0;
 }
 
 #conteneurCarte #svgCarte {
@@ -168,36 +177,36 @@ h2 {
 .infosTitre {
 	font-size: 1.4em;
 	font-family: sans-serif;
-	fill: #aaa;
+	fill: #555;
 }
 
 .infosTitreCat {
-	fill: #fff;	
+	fill: #555;	
 }
 
 .infosTexte {
 	font-size: 1em;
 	font-family: sans-serif;
-	fill: #333;
+	fill: #555;
 }
 
 #infosFond {
-	fill: #eee;
+	fill: #ddd;
 }
 
 .capitaleTexte {
 	font-size: 40%;
 	font-family: sans-serif;
-	fill: #fff;
+	fill: #aaa;
 }
 
 .capitalePoint {
-	fill: #fff;	
+	fill: #aaa;	
 }
 
 .pictosMort {
 	stroke-width: 0.03em;
-	stroke: #fff;	
+	stroke: #000;	
 }
 
 #sources {
@@ -236,24 +245,28 @@ h2 {
 	<?php	
 		include("menu.php");
 	?>
+	<br/>
+
+
+	<h2>Rapport Blasphème</h2>
+	<div id="cp">
+		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque venenatis commodo ante. Morbi bibendum, tortor sed varius ultrices, erat felis consectetur libero, sit amet porttitor lectus ligula sit amet elit. Proin sed ipsum metus. Sed vestibulum hendrerit est, sed condimentum massa. Nulla rhoncus volutpat erat, eget pharetra neque lobortis eget.</p>
+		<p>Lire le rapport</p>
+	</div>
+
+
 	
-	
-	<br>
-
-
-
-
-	
-	<h2>Planisphère des atteintes à la religion</h2>
+	<h2>Carte de la répression au nom des religions</h2>
 
 	<div id="conteneurCarte">
-		<svg id="svgCarte"></svg>
-			
+		<svg id="svgCarte"></svg>		
 	</div>
+	<p style="text-align: left; margin-left: 20px;">* le fait de renoncer volontairement à sa religion</p>
 	
 	<div id="sources">
-			<p>Based on <br/>Pew Research, Religion and Public Life Project, 21 novembre 2012 <a href="http://www.pewforum.org/2012/11/21/laws-penalizing-blasphemy-apostasy-and-defamation-of-religion-are-widespread/">source</a><br/>Zeev Maoz and Errol A. Henderson. “The World Religion Dataset, 1945-2010: Logic, Estimates, and trends.” International Interactions, 39(3) <a href="http://www.correlatesofwar.org/COW2%20Data/Religion/Religion.htm">source</a><br/>
-			Powered by <a href="http://d3js.org/">D3.js</a> de  Mike Bostock</p>
+			<p>Data visualisation réalisée par Pierre-Alain Leboucher et Dorian Ratovo</p>
+			<p>Basé sur <br/>Pew Research, Religion and Public Life Project, 21 novembre 2012 <a href="http://www.pewforum.org/2012/11/21/laws-penalizing-blasphemy-apostasy-and-defamation-of-religion-are-widespread/">source</a><br/>Zeev Maoz and Errol A. Henderson. “The World Religion Dataset, 1945-2010: Logic, Estimates, and trends.” International Interactions, 39(3) <a href="http://www.correlatesofwar.org/COW2%20Data/Religion/Religion.htm">source</a><br/>
+			A l'aide de <a href="http://d3js.org/">D3.js</a> de Mike Bostock</p>
 	</div>
 
 

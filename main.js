@@ -42,7 +42,7 @@ function setup()
 	
 	
 	// LANGUE
-	var LANGUE = "ENG";
+	var LANGUE = "FR";
 	
 	
 	var infosPays = [];
@@ -83,6 +83,7 @@ function setup()
 		legendeReligionsTextes[i] = infos.append("svg:text");
 	}
 	
+	var paysTrouve = false;
 	var paysPenaliseParMort = [];
 	var pictosMortCarte = [];
  			
@@ -273,14 +274,14 @@ function setup()
 		y = plusPct(y, 2);
 				
 
-		categories = [ [ "noPenalty", 				"none",						 	"aucune",							"aucune pénalisation par la loi" ], 
-						[ "diffamation", 			"defamation of religions",		"diffamation des religions",		"" ],
-						[ "blaspheme", 				"blasphemy",					"blasphème",						"discours jugé irrévérencieux à l'égard de ce qui est vénéré par les religions ou de ce qui est considéré comme sacré" ],
-						[ "apostasie", 				"apostasy",						"apostasie",						"le fait de renoncer volontairement à sa religion" ],  
-						[ "blasphemeDiffamation", 	"blasphemy + defamation",		"blasphème + diffamation",			"" ],
-						[ "apostasieDiffamation", 	"apostasy + defamation",		"apostasie + diffamation",			"" ],  
-						[ "blasphemeApostasie", 	"blasphemy + apostasy",			"blasphème + apostasie",			"" ], 
-						[ "allPenalties", 			"all penalties",				"toutes les pénalisations",			"" ] ];
+		categories = [ [ "noPenalty", 				"none",						 	"aucune" ], 
+						[ "diffamation", 			"defamation of religions",		"diffamation des religions" ],
+						[ "blaspheme", 				"blasphemy",					"blasphème" ],
+						[ "apostasie", 				"apostasy",						"apostasie" ],  
+						[ "blasphemeDiffamation", 	"blasphemy + defamation",		"blasphème + diffamation" ],
+						[ "apostasieDiffamation", 	"apostasy + defamation",		"apostasie + diffamation" ],  
+						[ "blasphemeApostasie", 	"blasphemy + apostasy",			"blasphème + apostasie" ], 
+						[ "allPenalties", 			"all penalties",				"toutes les pénalisations" ] ];
 	
 
 		categories.forEach(function(d, i){
@@ -291,7 +292,6 @@ function setup()
 			legende.append("svg:text").attr("class", "legendeTexte")
 				.attr("x", plusPct(x, 2)).attr("y", plusPct(y, 1))
 				.attr("name", d[0])
-				.attr("title", d[3])
 				.text(function(){
 					var texte = "";
 					if(LANGUE == "FR")
@@ -569,7 +569,8 @@ function setup()
 		});
 
 		
-	
+		paysTrouve = false;
+
 		queue()
 			.defer(d3.csv, "pays-fr-en-de-es-iso2-iso3-id",	function(d){ recupererTitre(d); })
 			.defer(d3.csv,  "couleursReligions.csv",		function(d, i){ recupererCouleurReligion(d, i); })
@@ -582,18 +583,22 @@ function setup()
 	
 	
 
-
-
 	function recupererTitre(d)
 	{
+
+
 		if(LANGUE == "FR")
 		{
-
 
 			if(paysClique.properties.name.toLowerCase() == d.pays_en.toLowerCase())
 			{	
 				infosTitre[0].text(d.pays_fr);	
+				paysTrouve = true;
+			} else if(!paysTrouve){
+				infosTitre[0].text(paysClique.properties.name);
 			}
+
+
 
 		} else {
 			
@@ -628,7 +633,6 @@ function setup()
 		if(d.name == paysClique.properties.name)
 		{
 			cow = d.cow;
-			isInformed = true;
 		}
 	}
 	
@@ -640,9 +644,9 @@ function setup()
 	function traiterReligions(d)
 	{	
 		
-		if(isInformed && cow == d.name)
+		if(cow == d.name)
 		{
-			
+			isInformed = true;
 			infosValeurs[0][0] = d.chrstcatpct;
 			infosValeurs[0][1] = d.chrstprotpct;
 			infosValeurs[0][2] = d.chrstorthpct;
@@ -684,14 +688,14 @@ function setup()
 	
 			donut.append("path")
 			    .attr("d", arc)
-			    .style("fill", function(d, i){ return "hsl("+infosValeurs[2][i]+", 80%, 50%)"; })
+			    .style("fill", function(d, i){ return infosValeurs[2][i] })
 			    .attr("title", function(d, i){ return infosValeurs[1][i]+": "+d.data*100+"%"; })
 			    .attr("transform", "translate("+posX+", "+posY+")")
 			    .each(function(d, i){ 
 			    	legendeReligionsCarres[i] = infos.append("svg:rect")
 			    		.attr("width", "1%").attr("height", "1%")
 			    		.attr("x", plusPct(pctX, 16)).attr("y", plusPct(pctY, 1))
-			    		.style("fill", "hsl("+infosValeurs[2][i]+", 80%, 50%)");
+			    		.style("fill", infosValeurs[2][i]);
 			    	legendeReligionsTextes[i] = infos.append("svg:text").attr("class", "infosTexte")
 			    		.attr("x", plusPct(pctX, 18)).attr("y", plusPct(pctY, 2))
 			    		.text(infosValeurs[1][i]);
@@ -806,9 +810,12 @@ function setup()
 
 
 
-			var colorDiffamation 	= "#568cac" 
+			var colorDiffamation 	= "#568cac"; 
 			var colorBlaspheme 		= "#5656bf"; 
 			var colorApostasie 		= "#8080a0"; 
+			var colorBlasphemeDiffamation = "#804ab4";
+			var colorApostasieDiffamation = "#ac568c";
+			var colorBlasphemeApostasie = "#bf5656";
 			
 
 			
@@ -816,21 +823,39 @@ function setup()
 			switch(legendeClique)
 			{
 				case "diffamation":
-					if(nomClasse == legendeClique || nomClasse == "apostasieDiffamation" || nomClasse == "blasphemeDiffamation")
+					if(nomClasse == legendeClique || nomClasse == "apostasieDiffamation" || nomClasse == "blasphemeDiffamation" || nomClasse == "allPenalties")
 					{
 						carte.selectAll("#"+pa.getAttribute("id")).transition().duration(300).style("fill", colorDiffamation);	
 					}
 					break;
 				case "blaspheme":
-					if(nomClasse == legendeClique || nomClasse == "blasphemeApostasie" || nomClasse == "blasphemeDiffamation")
+					if(nomClasse == legendeClique || nomClasse == "blasphemeApostasie" || nomClasse == "blasphemeDiffamation" || nomClasse == "allPenalties")
 					{
 						carte.selectAll("#"+pa.getAttribute("id")).transition().duration(300).style("fill", colorBlaspheme);	
 					}
 					break;
 				case "apostasie":
-					if(nomClasse == legendeClique || nomClasse == "apostasieDiffamation" || nomClasse == "blasphemeApostasie")
+					if(nomClasse == legendeClique || nomClasse == "apostasieDiffamation" || nomClasse == "blasphemeApostasie" || nomClasse == "allPenalties")
 					{
 						carte.selectAll("#"+pa.getAttribute("id")).transition().duration(300).style("fill", colorApostasie);	
+					}
+					break;
+				case "blasphemeApostasie":
+					if(nomClasse == legendeClique || nomClasse == "allPenalties")
+					{
+						carte.selectAll("#"+pa.getAttribute("id")).transition().duration(300).style("fill", colorBlasphemeApostasie);	
+					}
+					break;
+				case "blasphemeDiffamation":
+					if(nomClasse == legendeClique || nomClasse == "allPenalties")
+					{
+						carte.selectAll("#"+pa.getAttribute("id")).transition().duration(300).style("fill", colorBlasphemeDiffamation);	
+					}
+					break;
+				case "apostasieDiffamation":
+					if(nomClasse == legendeClique || nomClasse == "allPenalties")
+					{
+						carte.selectAll("#"+pa.getAttribute("id")).transition().duration(300).style("fill", colorApostasieDiffamation);	
 					}
 					break;
 				default:

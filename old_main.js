@@ -18,7 +18,7 @@ function setup()
 	
 	var graticule = d3.geo.graticule();
 	
-	var svg = d3.select("#svg");
+	var svg = d3.select("#svgCarte");
 	
 	svg.append("defs").append("path")
 		.datum({type: "Sphere"})

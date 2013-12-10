@@ -179,7 +179,7 @@
 <div id="EnTete">
 	<h1 id="Logo">
 		
-			<a href="/"><img src="http://rsf.org/squelettes/img/fr/logo-fr.png" alt="Reporters sans frontières"></a>
+			<a href="/"><img src="squelettes/img/fr/logo-fr.png" alt="Reporters sans frontières"></a>
 		
 	</h1>
 
