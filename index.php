@@ -206,11 +206,12 @@ h2 {
 
 .pictosMort {
 	stroke-width: 0.03em;
-	stroke: #000;	
+	stroke: #000;
+	fill:#fff;	
 }
 
 #sources {
-	color: #aaa;
+	color: #555;
 	text-align: left;
 	font-size: 0.8em;
 	line-height: 1.3em;
@@ -218,7 +219,7 @@ h2 {
 }
 
 #sources a {
-	color: #555;
+	color: #aaa;
 }
 
 	</style>
@@ -251,17 +252,17 @@ h2 {
 	<h2>Rapport Blasphème</h2>
 	<div id="cp">
 		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque venenatis commodo ante. Morbi bibendum, tortor sed varius ultrices, erat felis consectetur libero, sit amet porttitor lectus ligula sit amet elit. Proin sed ipsum metus. Sed vestibulum hendrerit est, sed condimentum massa. Nulla rhoncus volutpat erat, eget pharetra neque lobortis eget.</p>
-		<p>Lire le rapport</p>
+		<p><a style="color:#DC002E;" href="">Lire le rapport</a></p>
 	</div>
 
 
 	
-	<h2>Carte de la répression au nom des religions</h2>
+	<h2>La répression au nom des religions</h2>
 
 	<div id="conteneurCarte">
 		<svg id="svgCarte"></svg>		
 	</div>
-	<p style="text-align: left; margin-left: 20px;">* le fait de renoncer volontairement à sa religion</p>
+	<p style="text-align: left; margin-left: 20px; font-size: 0.8em;">* le fait de renoncer volontairement à sa religion</p>
 	
 	<div id="sources">
 			<p>Data visualisation réalisée par Pierre-Alain Leboucher et Dorian Ratovo</p>

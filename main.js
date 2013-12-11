@@ -42,14 +42,13 @@ function setup()
 	
 	
 	// LANGUE
-	var LANGUE = "FR";
+	var LANGUE = "ENG";
 	
 	
 	var infosPays = [];
 	var carte = svg.append("svg:g").attr("id", "carte");
 	var capitalePoint = carte.append("rect").attr("class", "capitalePoint");
 	var capitaleTexte = carte.append("rect").attr("class", "capitaleTexte");
-	var pictoPath;
 	var categories;
 	var coordonneesCapitale;
 	var pictoMortLegende;
@@ -86,7 +85,8 @@ function setup()
 	var paysTrouve = false;
 	var paysPenaliseParMort = [];
 	var pictosMortCarte = [];
- 			
+ 	var forme = "M24.869 -17.798 L17.798 -24.869 L0 -7.071 L-17.797 -24.869 L-24.869 -17.798 L-7.071 0 L-24.869 17.798 L-17.798 24.869 L0 7.071 L17.798 24.869 L24.869 17.798 L7.071 0Z"
+	
 	
 	
 
@@ -103,12 +103,9 @@ function setup()
 	var ready = function(error, results) {
 
 		traiterInfosBlaspheme(results[0]);
-		pictoPath = results[1][0].path;
-		dessinerCarte(results[2], results[3]);
-		dessinerLegende();		
-		
+		dessinerCarte(results[1], results[2]);
+		dessinerLegende();			
 		lireHashDemarrage();
-		
 		resize();
 	}
 
@@ -117,7 +114,6 @@ function setup()
 	
 	queue()
 		.defer(lireCsv, "blasphemeInfos.csv")
-		.defer(lireCsv, "pictoMort.csv")
 		.defer(lireJson, "world-countries.json")
 		.defer(lireCsv, "pays-fr-en-de-es-iso2-iso3-id")
 		.awaitAll(ready);
@@ -277,7 +273,7 @@ function setup()
 		categories = [ [ "noPenalty", 				"none",						 	"aucune" ], 
 						[ "diffamation", 			"defamation of religions",		"diffamation des religions" ],
 						[ "blaspheme", 				"blasphemy",					"blasphème" ],
-						[ "apostasie", 				"apostasy",						"apostasie" ],  
+						[ "apostasie", 				"apostasy*",					"apostasie*" ],  
 						[ "blasphemeDiffamation", 	"blasphemy + defamation",		"blasphème + diffamation" ],
 						[ "apostasieDiffamation", 	"apostasy + defamation",		"apostasie + diffamation" ],  
 						[ "blasphemeApostasie", 	"blasphemy + apostasy",			"blasphème + apostasie" ], 
@@ -324,7 +320,11 @@ function setup()
 			.on("click", function(d){ clickLegende(this); });
 
 		// picto legende
-		pictoMortLegende = legende.append("svg:path").attr("d", pictoPath).attr("class", "pictosMort");
+		pictoMortLegende = legende.append("svg:path")
+			.attr("d", forme)
+			.attr("transform","scale(0.01)")
+			.style("fill", "#fff")
+			.style("stroke", "#000");
 
 	}	
 	
@@ -374,26 +374,23 @@ function setup()
 	
 	function hoverPays(d)
 	{
-		/*if(!isZoomed)
-		{
-			var cible = this.svg.select("#"+d.id);
+
+			var cible = svg.select("#"+d.id);
 			cible.transition()
 				.duration(100)
-				.style("fill", "#c00");
-		}*/
+				.style("opacity", "0.6");
+
 	}
 	
 	
 	function outPays(d)
 	{
-		/*if(!isZoomed)
-		{
 			
-			var cible = this.svg.select("#"+d.id);
+			var cible = svg.select("#"+d.id);
 			cible.transition()
 				.duration(100)
-				.style("fill", null);		
-		}*/
+				.style("opacity", "1");
+
 	}
 	
 	
@@ -887,7 +884,6 @@ function setup()
 	
 
 
-
 	
 	function afficherPictosMortCarte()
 	{
@@ -899,10 +895,13 @@ function setup()
 		paysPenaliseParMort.forEach(function(d, i){
 			var centroid = path.centroid(d);
 			pictosMortCarte[i] = carte.append("svg:g")
-				.attr("transform", "translate("+centroid[0]+", "+centroid[1]+") scale("+width/500+")")
+				.attr("transform", "translate("+centroid[0]+", "+centroid[1]+") scale("+width/10000+")")
 				.append("svg:path")
-				.attr("class", "pictosMort")
-				.attr("d", pictoPath);
+				.attr("d", forme)
+				.style("stroke","#000000")
+				.style("stroke-width","2")
+				.style("fill","#ffffff");
+				
 		});
 
 	}
@@ -961,7 +960,7 @@ function setup()
 		var posX = width*0.01*2.5;
 		var posY = height*0.01*58.5;
 		
-		pictoMortLegende.attr("transform", "translate("+posX+", "+posY+") scale(4)");
+		pictoMortLegende.attr("transform", "translate("+posX+", "+posY+") scale(0.3)");
 		
 		posX = width*0.01*2;
 		posY = width*0.01*6;

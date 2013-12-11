@@ -92,7 +92,7 @@ cow,id,name
 "YUG",345,"Yugoslavia"
 "YUG",345,"Yugoslavia"
 "BOS",346,"Bosnia and Herzegovina"
-"KOS",347,"Kosovo"
+"XKS",347,"Kosovo"
 "SLV",349,"Slovenia"
 "GRC",350,"Greece"
 "GRC",350,"Greece"
@@ -242,3 +242,4 @@ cow,id,name
 "PAL",986,"Palau"
 "FSM",987,"Federated States of Micronesia"
 "WSM",990,"Samoa"
+
