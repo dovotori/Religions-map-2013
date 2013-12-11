@@ -1,0 +1,128 @@
+
+#cp, #sources {
+	width: 970px;
+	text-align: left;
+	margin: 0px auto;
+}
+
+
+	
+
+#conteneurCarte {
+	text-align: center;
+	margin: 0; padding: 0;
+}
+
+#conteneurCarte #svgCarte {
+background: #efefef none;
+	width: 100%;
+	margin: 0; padding: 0;
+	overflow: hidden;
+}
+
+h2 {
+	width:970px;
+	text-align:left;
+	margin:0 auto;
+	padding:20px;
+	color:#000;
+	position: relative;
+	font-family:"BebasNeueRegular";
+	font-size:3em;
+}
+
+.graticule {
+	fill: none;
+	stroke: #fff;
+	stroke-width: 0.02em;
+}
+
+#sphere{
+	fill: #efefef;	
+}
+
+.boundary {
+	fill: none;
+	stroke: #888;
+	stroke-width: 0.03em;
+}
+
+
+.boundary:hover {
+	cursor: pointer;
+}
+
+
+.noPenalty						{ fill: #dfdfdf; }
+
+.diffamation					{ fill: #568cac; }
+.blaspheme						{ fill: #5656bf; }
+.apostasie						{ fill: #8080a0; }
+.blasphemeDiffamation			{ fill: #804ab4; }
+.apostasieDiffamation			{ fill: #ac568c; }
+.blasphemeApostasie				{ fill: #bf5656; }
+
+.allPenalties					{ fill: #533a67; }
+
+
+.legendeTitre {
+	font-size: 1em;
+	font-family: sans-serif;
+	fill: #000;
+}
+
+.legendeTexte {
+	font-size: 1em;
+	font-family: sans-serif;
+	fill: #000;
+}
+
+.legendeTexte:hover {
+	cursor: pointer;	
+}
+
+.infosTitre {
+	font-size: 1.4em;
+	font-family: sans-serif;
+	fill: #555;
+}
+
+.infosTitreCat {
+	fill: #555;	
+}
+
+.infosTexte {
+	font-size: 1em;
+	font-family: sans-serif;
+	fill: #555;
+}
+
+#infosFond {
+	fill: #ddd;
+}
+
+.capitaleTexte {
+	font-size: 40%;
+	font-family: sans-serif;
+	fill: #aaa;
+}
+
+.capitalePoint {
+	fill: #aaa;	
+}
+
+.pictosMort {
+	stroke-width: 0.03em;
+	stroke: #000;	
+}
+
+#sources {
+	color: #555;
+	text-align: left;
+	font-size: 0.8em;
+	line-height: 1.3em;
+	padding: 1%;
+}
+
+#sources a {
+	color: #aaa;
