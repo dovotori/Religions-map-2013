@@ -197,7 +197,6 @@ function setup()
 			.attr("id", function(d){ return d.id; })
 			.attr("title", function(d)
 			{ 
-
 				if(LANGUE == "FR")
 				{
 					var nomPays = "inconnu";
