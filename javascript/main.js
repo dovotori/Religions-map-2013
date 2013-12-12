@@ -25,13 +25,13 @@ function setup()
 		.attr("id", "sphere")
 		.attr("d", path);
 	
-	svg.append("use")
-		.attr("class", "stroke")
-		.attr("xlink:href", "#sphere");
+	// svg.append("use")
+	// 	.attr("class", "stroke")
+	// 	.attr("xlink:href", "#sphere");
 	
-	svg.append("use")
-		.attr("class", "fill")
-		.attr("xlink:href", "#sphere");
+	// svg.append("use")
+	// 	.attr("class", "fill")
+	// 	.attr("xlink:href", "#sphere");
 	
 	var dessinGraticule = svg.append("path")
 		.datum(graticule)
@@ -41,8 +41,7 @@ function setup()
 	
 	
 	
-	// LANGUE
-	var LANGUE = "ENG";
+
 	
 	
 	var infosPays = [];
@@ -92,15 +91,20 @@ function setup()
 
 
 
-	var lireCsv = function(url, callback) {
+	function lireCsv(url, callback) {
 		d3.csv(url, function(d){ callback(null, d); });
 	}
-	var lireJson = function(url, callback) {
+	function lireJson(url, callback) {
 		d3.json(url, function(d){ callback(null, d); });
 	}
 
-
-	var ready = function(error, results) {
+	queue()
+		.defer(lireCsv, "data/blasphemeInfos.csv")
+		.defer(lireJson, "data/world-countries.json")
+		.defer(lireCsv, "data/pays-fr-en-de-es-iso2-iso3-id.csv")
+		.awaitAll(ready);
+	
+	function ready(error, results) {
 
 		traiterInfosBlaspheme(results[0]);
 		dessinerCarte(results[1], results[2]);
@@ -108,17 +112,6 @@ function setup()
 		lireHashDemarrage();
 		resize();
 	}
-
-
-
-	
-	queue()
-		.defer(lireCsv, "blasphemeInfos.csv")
-		.defer(lireJson, "world-countries.json")
-		.defer(lireCsv, "pays-fr-en-de-es-iso2-iso3-id")
-		.awaitAll(ready);
-	
-
 
 
 	
@@ -131,7 +124,7 @@ function setup()
 		var hash = window.location.hash;	
 		if(hash != "#" && hash != "" && hash != "general")
 		{
-			d3.json("world-countries.json", function(collection){ 
+			d3.json("data/world-countries.json", function(collection){ 
 				
 				collection.features.forEach(function(d){
 					if(hash == "#"+d.id){ paysClique = d; zoomPays(); }	
@@ -197,6 +190,7 @@ function setup()
 			.attr("id", function(d){ return d.id; })
 			.attr("title", function(d)
 			{ 
+
 				if(LANGUE == "FR")
 				{
 					var nomPays = "inconnu";
@@ -568,11 +562,11 @@ function setup()
 		paysTrouve = false;
 
 		queue()
-			.defer(d3.csv, "pays-fr-en-de-es-iso2-iso3-id",	function(d){ recupererTitre(d); })
-			.defer(d3.csv,  "couleursReligions.csv",		function(d, i){ recupererCouleurReligion(d, i); })
-			.defer(d3.csv, 	"COWstate.csv", 				function(d){ traiterNoms(d); })
-			.defer(d3.csv, 	"WRPstate2010.csv", 			function(d){ traiterReligions(d); })
-			.defer(d3.csv ,	"listeCapitalesPosition.csv", 	function(d){ dessinerCapitales(d); })
+			.defer(d3.csv, "data/pays-fr-en-de-es-iso2-iso3-id.csv",	function(d){ recupererTitre(d); })
+			.defer(d3.csv,  "data/couleursReligions.csv",		function(d, i){ recupererCouleurReligion(d, i); })
+			.defer(d3.csv, 	"data/COWstate.csv", 				function(d){ traiterNoms(d); })
+			.defer(d3.csv, 	"data/WRPstate2010.csv", 			function(d){ traiterReligions(d); })
+			.defer(d3.csv ,	"data/listeCapitalesPosition.csv", 	function(d){ dessinerCapitales(d); })
 			.awaitAll(dessinerInfos);
 		
 	}

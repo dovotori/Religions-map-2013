@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="fr">
+	<head>
+		<title>Reporters sans frontières</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<script type="text/javascript" src="/squelettes/lib/js/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="javascript/d3.js"></script>
+		<script type="text/javascript" src="javascript/d3geo.js"></script>
+		<script type="text/javascript" src="javascript/queue.js"></script>
+		<script type="text/javascript" src="javascript/main.js"></script>
+
+		<script type="text/javascript">
+
+		  var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', 'UA-2498778-1']);
+		  _gaq.push(['_setDomainName', 'rsf.org']);
+		  _gaq.push(['_trackPageview']);
+
+		  (function() {
+		    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		  })();
+
+		</script>
+
+		<link rel="stylesheet" href="knacss.css" media="all">
+
+		<style type="text/css">
+
+			@font-face {
+
+			    font-family: 'BebasNeueRegular';
+			    src: url('/squelettes/fonts/BebasNeue-webfont.eot');
+			    src: url('/squelettes/fonts/BebasNeue-webfont.eot?#iefix') format('embedded-opentype'),
+			         url('/squelettes/fonts/BebasNeue-webfont.woff') format('woff'),
+			         url('/squelettes/fonts/BebasNeue-webfont.ttf') format('truetype'),
+			         url('/squelettes/fonts/BebasNeue-webfont.svg#BebasNeueRegular') format('svg');
+			    font-weight: normal;
+			    font-style: normal;
+			}
+
+			body {
+				font-family:helvetica, sans-serif;
+				font-size:14px;
+			}
+
+			#cp, #sources{
+				max-width:800px;
+				margin:0 auto;
+				padding:10px 20px;
+			}
+
+			#carte #svgCarte {
+				background: #efefef none;
+				overflow: hidden;
+			}
+
+			h2 {
+				text-align:left;
+				margin:20px auto 0;
+				color:#000;
+				position: relative;
+				font-family:"BebasNeueRegular";
+				font-size:2em;
+			}
+
+			.graticule {
+				fill: none;
+				stroke: #fff;
+				stroke-width: 0.02em;
+			}
+
+			#sphere{
+				fill: #efefef;	
+			}
+
+			.boundary {
+				fill: none;
+				stroke: #888;
+				stroke-width: 0.03em;
+			}
+
+
+			.boundary:hover {
+				cursor: pointer;
+			}
+
+
+			.noPenalty						{ fill: #dfdfdf; }
+
+			.diffamation					{ fill: #568cac; }
+			.blaspheme						{ fill: #5656bf; }
+			.apostasie						{ fill: #8080a0; }
+			.blasphemeDiffamation			{ fill: #804ab4; }
+			.apostasieDiffamation			{ fill: #ac568c; }
+			.blasphemeApostasie				{ fill: #bf5656; }
+
+			.allPenalties					{ fill: #533a67; }
+
+
+			.legendeTitre {
+				font-size: 1em;
+				font-family: sans-serif;
+				fill: #000;
+			}
+
+			.legendeTexte {
+				font-size: 1em;
+				font-family: sans-serif;
+				fill: #000;
+			}
+
+			.legendeTexte:hover {
+				cursor: pointer;	
+			}
+
+			.infosTitre {
+				font-size: 1.4em;
+				font-family: sans-serif;
+				fill: #555;
+			}
+
+			.infosTitreCat {
+				fill: #555;	
+			}
+
+			.infosTexte {
+				font-size: 1em;
+				font-family: sans-serif;
+				fill: #555;
+			}
+
+			#infosFond {
+				fill: #ddd;
+			}
+
+			.capitaleTexte {
+				font-size: 40%;
+				font-family: sans-serif;
+				fill: #aaa;
+			}
+
+			.capitalePoint {
+				fill: #aaa;	
+			}
+
+			.pictosMort {
+				stroke-width: 0.03em;
+				stroke: #000;
+				fill:#fff;	
+			}
+
+			#sources {
+				color: #555;
+				text-align: left;
+				font-size: 0.8em;
+				line-height: 1.3em;
+				padding: 1%;
+			}
+
+			#sources a {
+				color: #aaa;
+			}
+
+		</style>
+
+
+		<script type="text/javascript">
+			// LANGUE
+			var LANGUE = "FR";
+
+			jQuery(document).ready(function($jQ){
+
+				jQuery("#more").hide(0);
+				jQuery("#intro").append("<br/><a href='#'>Lire la suite</a>");
+				jQuery("#intro a").click(function(){
+					jQuery("#more").slideDown(500);
+					jQuery(this).hide(0);
+				})
+
+				
+
+			});
+		</script>
+
+	</head>
+	<body>
+		<div id="cp" class="line">
+			<div class="txtcenter">
+				<a href="http://rsf.org">
+					<img class="w150p" src="http://fr.rsf.org/squelettes/img/fr/logo-fr.png" alt="logo RSF"/>
+				</a>
+				<br/>
+				<br/>
+				RSF rend public son rapport :
+			</div>
+
+			<h2>“Blasphème : L’information sacrifiée sur l’autel de la religion”</h2>
+			<p id="intro">Nombreux, trop nombreux sont les pays où l’information et ses acteurs doivent affronter tous les jours une censure bien particulière et redoutable : celle qui s’exerce au nom de la religion voire de Dieu lui-même. De plus en plus souvent, cette volonté de faire pièce à la liberté d’informer invoque le très subjectif et difficilement définissable “sentiment des croyants”.</p>
+			<div id="more">	Ce contexte est lourd de risques. Reporters sans frontières en dresse l’état des lieux, assorti de recommandations, dans son rapport “Blasphème : L’information sacrifiée sur l’autel de la religion” rendu public ce 12 décembre 2013. A l’appui de multiples exemples traités par l’organisation au Moyen-Orient, en Afrique, en Asie, mais aussi dans certaines régions d’Europe (le continent américain faisant ici exception), ce travail s’articule en trois temps.<br/>
+			Le premier s’attache à décrire les entorses au droit de savoir, parfois cruelles, brandies sous l’onction du sacré. Il révèle en même temps combien le couperet religieux contre les journalistes et les blogueurs sert avant tout des intérêts politiques. Bien rares, en effet, sont les cas où la censure tombe pour punir un blasphème ou l’atteinte supposée au dogme. Dans l’Iran des Mollahs, dans les émirats du Golfe persique, mais aussi dans ces pays où les patriarcats orthodoxes gardent une forte influence, le journaliste est vite assimilé à l’hérétique dès qu’il ose informer des pratiques de pouvoir bien peu saintes d’un régime et de sa cléricature. Et quand il ose dénoncer les exactions d’un groupe islamiste armé, au Pakistan, au Bangladesh ou au Nigéria, il devient l’infidèle à abattre bien que musulman lui-même.<br/>
+			Usage politique de la religion, certes, mais poids bien réel de celle-ci dans des sociétés où la frontière du spirituel et du temporel n’est pas reconnue. Donner la parole à des homosexuels du Sultanat d’Oman, qui estiment leur sort plus enviable que dans les pétromonarchies de droit divin voisines ? C’est oser promouvoir la “dépravation morale” et donc le “sacrilège”. Marqueurs de sécularisation, des sujets tels que la condition des femmes, la sexualité ou la procréation valent autant de tabous. <br/>
+			Le deuxième temps du rapport explore les différentes formes de législations sanctionnant les atteintes à la religion ou au dit “sentiment des croyants”. De telles lois ont cours dans près de la moitié (47 %) des États de la planète. Si seuls les États islamiques les plus durs prévoient des peines – parfois de mort – pour “apostasie” (le fait de renoncer à la religion), le blasphème reste passible des tribunaux dans pas moins de 31 pays, dont la Grèce, l’Italie ou encore l’Irlande, qui a remis le délit au goût du jour en 2010. Dans 86 États, la “diffamation des religions” relève du domaine pénal.<br/>
+			Les applications les plus sévères ne concernent pas, là encore, que les pays dotés d’une religion d’État dont il s’agit de protéger à la fois le dogme et les représentants. Dans bien des cas, la coexistence parfois tendue entre communautés justifie aux yeux des autorités la répression contre une information susceptible d’échauffer les esprits. A double tranchant, les législations des anciens pays membres de l’Union soviétique se chargent de tracer les limites du “journalistiquement acceptable”, en sanctionnant à la fois l’“offense à la religion” et l’“extrémisme”.<br/>
+			Le troisième et dernier temps du rapport revient sur les conséquences diplomatiques générées par la représentation de la religion dans la sphère publique, à l’heure d’Internet et de l’information globalisée. La principale est cette croisade onusienne des pays de l’Organisation de la coopération islamique (OCI), qui a bien failli sacrifier la liberté d’informer au prix d’une dangereuse résolution votée en 2007 et même soutenue par des pays athées comme la Chine, le Vietnam ou Cuba. L’offensive, un temps atténuée, a repris en 2012 avec la publication sur YouTube de la très controversée vidéo l’Innocence des musulmans. Or les pays de l’OCI ne sont pas seuls à donner de la voix contre des libertés universelles. La Russie a pris la relève avec sa promotion des “valeurs traditionnelles” et trois résolutions en ad hoc déposées depuis 2009 au Conseil des droits de l’homme de l’ONU. <br/>
+			Un nouveau front s’ouvre dans le combat pour la liberté de l’information. Au vu de l’examen réalisé dans le présent rapport, et en accord avec son mandat et ses principes, Reporters sans frontières :<br/>
+				<ul>
+					<li>Appelle les institutions internationales et leurs organismes affiliés à rejeter les tentatives de certains Etats consistant à mettre la lutte contre le “blasphème” ou la “diffamation des religions” à équivalence des droits fondamentaux de la personne.</li>
+					<li>Formule le vœu de voir, à termes, aboli toute limitation de la liberté d’information et d’expression au nom de la religion dans les législations de pays européens qui prétendent “faire modèle” en matière de droits de l’homme et de pluralisme.</li>
+					<li>Approuve la résolution de l’Assemblée générale de l’ONU du 19 décembre 2011, mais rappelle que “la lutte contre l’intolérance, les stéréotypes négatifs, la stigmatisation, la discrimination, l’incitation à la violence et la violence fondés sur la religion ou la conviction” s’applique autant aux non-croyants qu’aux croyants, majoritaires ou non.</li>
+				</ul>
+			</div>
+			<p class="txtcenter">
+			<a href="pdf/FR_RAPPORT_BLASPHEME_BD.pdf"><img src="img/couvBlaspheme.png" alt="couverture du rapport"/></a>
+			</p>
+			<h2>Carte de la répression au nom des religions</h2>
+		</div>
+
+		<div id="carte" class="line">
+			
+			<svg id="svgCarte"></svg>		
+		</div>
+
+		
+		<div id="sources" class="line">
+			<p style="text-align: left; margin-left: 20px; font-size: 0.8em;">* le fait de renoncer volontairement à sa religion</p>
+			<p>Data visualisation réalisée par Pierre-Alain Leboucher et Dorian Ratovo</p>
+			<p>Basé sur <br/>
+				Pew Research, Religion and Public Life Project, 21 novembre 2012 <a href="http://www.pewforum.org/2012/11/21/laws-penalizing-blasphemy-apostasy-and-defamation-of-religion-are-widespread/">source</a><br/>Zeev Maoz and Errol A. Henderson. “The World Religion Dataset, 1945-2010: Logic, Estimates, and trends.” International Interactions, 39(3) <a href="http://www.correlatesofwar.org/COW2%20Data/Religion/Religion.htm">source</a><br/>
+			A l'aide de <a href="http://d3js.org/">D3.js</a> de Mike Bostock</p>
+		</div>
+
+	</body>
+</html>
+
