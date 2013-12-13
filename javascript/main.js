@@ -1,10 +1,12 @@
+
+var width, height;
 window.addEventListener("load", setup, false)
 
 
 function setup()
 {
 
-	var width, height;
+	
 	
 	var projection = d3.geo
 		//.azimuthalEqualArea();
@@ -228,24 +230,15 @@ function setup()
 	}
 	
 
-
-
-
-
-
-
-	
 	function dessinerLegende(){
 
-		var legende = svg.append("svg:g").attr("class", "legende");
+		var legende = svg.append("svg:g").attr("class", "legende").attr("id", "legende");
 
 		//fond de la légende
-		legende.append("svg:rect")
-			.attr("width","300px")
-			.attr("height","350px")
-			.style("fill","#aaa");
-
-
+		// legende.append("svg:rect")
+		// 	.attr("width","300px")
+		// 	.attr("height","350px")
+		// 	.style("fill","#aaa");
 
 
 		// position des elements dans le bloc legende
@@ -285,45 +278,75 @@ function setup()
 
 		categories.forEach(function(d, i){
 
+			
+
+				if(LANGUE == "FR"){ 
+					creerItem(d[2], d[0], false, i);
+				} else {
+					creerItem(d[1], d[0], false, i);
+				}
+
+
+
+		})
+
+
+		if(LANGUE == "FR"){ 
+			creerItem("passible de mort", "peindeDeMort", forme, categories.length);
+		} else {
+			creerItem("punishable by death", "peindeDeMort", forme, categories.length);
+		}
+
+		
+
+		
+
+
+
+
+		function creerItem(texteLegende, nomClasse, formePicto, j){
+
 			var marge = 18;
 
 			// création du groupe de l'item
 			var item = legende.append("svg:g")
-							.attr("id","item"+i)
-							.attr("name", d[0])
+							.attr("id","item"+j)
+							.attr("name", nomClasse)
 							.on("click", function(){ clickLegende(this); })
 							.on("mouseover", function(){ 
-								d3.select("#item"+i).style("opacity", "0.8").style("cursor", "pointer"); 
+								d3.select("#item"+j).style("opacity", "0.8").style("cursor", "pointer"); 
 							})
 							.on("mouseout", function(){ 
-								d3.select("#item"+i).style("opacity", "1").style("cursor", "arrow"); ; 
+				 				d3.select("#item"+j).style("opacity", "1").style("cursor", "arrow"); ; 
 							})
 			
 
 			//fond du bouton
-			var fond = item.append("svg:rect").style("fill","#fff").attr("id", "fond"+i);
+			var fond = item.append("svg:rect").style("fill","#fff").attr("id", "fond"+j);
 
+
+			
 			//carré de couleur de la légende
-			var pastilleCouleur = item.append("svg:rect").attr("class", d[0]).attr("id", "pastille"+i);
+			var pastilleCouleur = item.append("svg:rect").attr("class", nomClasse).attr("id", "pastille"+j);
+		
+			if(formePicto != false){
+				var picto = item.append("svg:path")
+					.attr("id", "picto"+j)
+					.attr("d", formePicto)
+					.style("fill", "#fff")
+					.style("stroke", "#000")
+					
+			}
 
 
 
 			//texte de la légende
 			var txtLegende = item.append("svg:text").attr("class", "legendeTexte")
-				.attr("id", "text"+i)
-				.text(function(){
-					var texte = "";
-					if(LANGUE == "FR")
-					{
-						texte = d[2];
-					} else {
-						texte = d[1];
-					}
-					return texte;
-				})
+				.attr("id", "text"+j)
+				.text(texteLegende)
 				
 
-			var txt = document.getElementById("text"+i).getBBox();
+			var txt = document.getElementById("text"+j).getBBox();
 
 			txtLegende.attr("x",txt.height+marge*1.5)
 				.attr("y",marge*1.2)
@@ -331,206 +354,31 @@ function setup()
 
 			//taille et position des fonds
 			fond.attr("width", txt.width+marge*2+txt.height).attr("height", txt.height+marge);
+			
+			
 			pastilleCouleur.attr("width", txt.height+marge).attr("height", txt.height+marge);
 			
-			item.attr("transform", "translate("+positionX+","+(positionY*1.5+i*(txt.height+marge*1.5))+")");
+			if(formePicto != false){
+				picto.attr("transform","scale(0.5) translate("+(txt.height+marge)+","+(txt.height+marge)+")")
+			}
+			
+			item.attr("transform", "translate("+positionX+","+(positionY*1.5+j*(txt.height+marge*1.5))+")");
 
 
-
-			// positionY += 20
-
-			// item.attr("transform","translate("++")")
-
-
-
-		})
-
-		var i = categories.length
-
-		// création de la légende pour le picto peine de mort
-		var item = legende.append("svg:g")
-							.attr("id","item"+j)
-							.attr("name", "passible de mort")
-							.on("click", function(){ clickLegende(this); })
-							.on("mouseover", function(){ 
-								d3.select("#item"+j).style("opacity", "0.8").style("cursor", "pointer"); 
-							})
-							.on("mouseout", function(){ 
-								d3.select("#item"+j).style("opacity", "1").style("cursor", "arrow"); ; 
-							})
-
-
-
-		item.append("svg:text").attr("class", "legendeTexte")
-			.attr("x", (x+2)+"%").attr("y", (y+1)+"%")
-			.attr("title", "passible de mort")
-			.attr("name", "passible de mort")
-			.text(function(){
-					var texte = "";
-					if(LANGUE == "FR")
-					{
-						texte = "passible de mort";
-					} else {
-						texte = "punishable by death";
-					}
-					return texte;
-			})
-			.on("click", function(){ clickLegende(this); });
-
-
-		// picto legende
-		pictoMortLegende = legende.append("svg:path")
-			.attr("d", forme)
-			.attr("transform","scale(0.01)")
-			.style("fill", "#fff")
-			.style("stroke", "#000");
-		
-
-
-
-		//replaement de la legende et re-dimmensionnement
-
-		
-
+		}
 
 
 		
 	}
 
 
-		
-	function _dessinerLegende()
-	{
 
-		var x = 1;
-		var y = 20;
-		var legende = svg.append("svg:g").attr("class", "legende");
 
-		legende.append("svg:text").attr("class", "legendeTitre")
-			.attr("x", (x+1)+"%").attr("y", y+"%")
-
-			.text(function(){
-				var titreLegende = "";
-				if(LANGUE == "FR"){ 
-					titreLegende = "Pénalisation par la loi";
-				} else {
-					titreLegende = "Penalize by law";
-				}
-				return titreLegende;	
-			});
-		x += 1;
-		y += 2;
-				
-		categories = [ [ "noPenalty", 				"none",						 	"aucune" ], 
-						[ "diffamation", 			"defamation of religions",		"diffamation des religions" ],
-						[ "blaspheme", 				"blasphemy",					"blasphème" ],
-						[ "apostasie", 				"apostasy*",					"apostasie*" ],  
-						[ "blasphemeDiffamation", 	"blasphemy + defamation",		"blasphème + diffamation" ],
-						[ "apostasieDiffamation", 	"apostasy + defamation",		"apostasie + diffamation" ],  
-						[ "blasphemeApostasie", 	"blasphemy + apostasy",			"blasphème + apostasie" ], 
-						[ "allPenalties", 			"all penalties",				"toutes les pénalisations" ] ];
 	
 
-		categories.forEach(function(d, i){
 
-			var bouton = legende.append("svg:g").attr("class", "bouton").attr("id", i)
-				.on("mouseover", function(){ hoverLegende(this); })
-				.on("mouseout", function(){ outLegende(this); });
-
-
-			// BOUTON
-
-			var fond = bouton.append("svg:rect")
-				.attr("id", "btn1"+i)
-				.attr("x", (x-0.2)+"%").attr("y", (y-1.0)+"%")
-				.style("fill", "#fff");
-
-			// TEXTE
-			bouton.append("svg:text").attr("class", "legendeTexte")
-				.attr("x", (x+2)+"%").attr("y", (y+1)+"%")
-				.attr("id", "text"+i)
-				.attr("name", d[0])
-				.text(function(){
-					var texte = "";
-					if(LANGUE == "FR")
-					{
-						texte = d[2];
-					} else {
-						texte = d[1];
-					}
-					return texte;
-				})
-				.on("click", function(){ clickLegende(this); });
-
-			
-
-
-			var texte = document.getElementById("text"+i);
-			var largeurTexte = texte.getBBox().width;
-			var hauteurTexte = texte.getBBox().height;
-			var xTexte = texte.getBBox().x;
-			var yTexte = texte.getBBox().y;
-
-			console.log( xTexte + " / " + yTexte)
-
-			fond.attr("width", (largeurTexte+60)+"px");
-			fond.attr("height", (hauteurTexte+5)+"px");
-
-			// CARRE COULEUR
-			bouton.append("svg:rect")
-				.attr("width", "10px")
-				.attr("height", hauteurTexte+10+"px")
-				.attr("x", xTexte+"px")
-				.attr("y", yTexte+"px")
-				.attr("class", d[0]);
-
-			y += 4;
-		});
 		
-
-
-		// texte mort en derniere ligne
-		var bouton = legende.append("svg:g").attr("class", "bouton").attr("id", i)
-				.on("mouseover", function(){ hoverLegende(this); })
-				.on("mouseout", function(){ outLegende(this); });
-
-		var bouton2 = bouton.append("svg:rect")
-				.attr("id", "btn2"+i)
-				.attr("width", "10%").attr("height", "2.4%")
-				.attr("x", (x+1.6)+"%").attr("y", (y-0.8)+"%")
-				.style("fill", "#ccc");
-
-		var bouton1 = bouton.append("svg:rect")
-				.attr("id", "btn1"+i)
-				.attr("height", "2.4%")
-				.attr("x", (x+1.4)+"%").attr("y", (y-1.0)+"%")
-				.style("fill", "#fff");
-
-		legende.append("svg:text").attr("class", "legendeTexte")
-			.attr("x", (x+2)+"%").attr("y", (y+1)+"%")
-			.attr("title", "passible de mort")
-			.attr("name", "passible de mort")
-			.text(function(){
-					var texte = "";
-					if(LANGUE == "FR")
-					{
-						texte = "passible de mort";
-					} else {
-						texte = "punishable by death";
-					}
-					return texte;
-			})
-			.on("click", function(){ clickLegende(this); });
-
-
-		// picto legende
-		pictoMortLegende = legende.append("svg:path")
-			.attr("d", forme)
-			.attr("transform","scale(0.01)")
-			.style("fill", "#fff")
-			.style("stroke", "#000");
-
-	}	
+	
 	
 	
 	
@@ -1088,7 +936,7 @@ function setup()
 		});
 		
 
-		if(legendeClique == "passible de mort" || legendeClique == "penalize by law")
+		if(legendeClique == "peindeDeMort")
 		{
 			afficherPictosMortCarte();
 			paysPenaliseParMort.forEach(function(pa){
@@ -1161,8 +1009,6 @@ function setup()
 	    width = window.innerWidth; 
 		height = window.innerHeight;
 
-		console.log(width);
-
 	    // update projection
 	    projection
 	        .translate([width / 2, height / 2])
@@ -1182,11 +1028,20 @@ function setup()
 	    
 		afficherPictosMortCarte();
 
-	
-		var posX = width*0.01*2.5;
-		var posY = height*0.01*58.5;
+
+		var scale = 1;
+		if(width < 500)
+		{
+			scale = 0.5;
+		}
+
+		// placement de la legende
+		var hauteurSVG = document.getElementById("svgCarte").getAttribute("height");
+		var hauteurLegende = document.getElementById("legende").getBBox().height;
+		var bonneHauteur = hauteurSVG - (hauteurLegende+100);
 		
-		pictoMortLegende.attr("transform", "translate("+posX+", "+posY+") scale(0.3)");
+
+		d3.select("#legende").attr("transform", "translate(0, "+bonneHauteur+") scale("+scale+")");
 		
 		posX = width*0.01*2;
 		posY = width*0.01*6;
@@ -1208,6 +1063,11 @@ function setup()
 		}
 	}
 
+
+
+	/*function map(valeur, minRef, maxRef, minDest, maxDest) {
+  		return minDest + (valeur - minRef) * (maxDest - minDest) / (maxRef - minRef);
+	}*/
 
 
 
