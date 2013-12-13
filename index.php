@@ -6,17 +6,17 @@ if (!isset($langue_user) && !isset($_SESSION["lang"])){
 
 	case"fr":
 	$_SESSION["lang"] = "fr";
-	header ("Location: /religions/fr.php");	
+	header ("Location: /religions/fr.html");	
 	break;
 		
 	case "en":
 	$_SESSION["lang"] = "en";
-	header ("Location: /religions/en.php");
+	header ("Location: /religions/en.html");
 	break;
   	
 	default:
 	$_SESSION["lang"] = "en";
-	header ("Location: /religions/en.php");
+	header ("Location: /religions/en.html");
 	break;
 	}
 }
