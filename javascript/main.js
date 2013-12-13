@@ -1,6 +1,4 @@
-
-window.addEventListener("load", setup, false);
-
+window.addEventListener("load", setup, false)
 
 
 function setup()
@@ -84,8 +82,7 @@ function setup()
 	var paysTrouve = false;
 	var paysPenaliseParMort = [];
 	var pictosMortCarte = [];
- 	var forme = "M24.869 -17.798 L17.798 -24.869 L0 -7.071 L-17.797 -24.869 L-24.869 -17.798 L-7.071 0 L-24.869 17.798 L-17.798 24.869 L0 7.071 L17.798 24.869 L24.869 17.798 L7.071 0Z"
-	
+ 	var forme = "M24.869 -17.798 L17.798 -24.869 L0 -7.071 L-17.797 -24.869 L-24.869 -17.798 L-7.071 0 L-24.869 17.798 L-17.798 24.869 L0 7.071 L17.798 24.869 L24.869 17.798 L7.071 0Z";
 	
 	
 
@@ -234,22 +231,33 @@ function setup()
 
 
 
-	
-		
-	function dessinerLegende()
-	{
 
-		var x = "1%";
-		var y = "20%";
+
+
+	
+	function dessinerLegende(){
+
 		var legende = svg.append("svg:g").attr("class", "legende");
 
-		// fond et titre
-		legende.append("svg:rect").style("fill", "#eee")
-			.attr("x", x).attr("y", y)
-			.attr("width", "16%").attr("height", "42%");
-		y = plusPct(y, 4);
-		legende.append("svg:text").attr("class", "legendeTitre")
-			.attr("x", plusPct(x, 1)).attr("y", y)
+		//fond de la légende
+		legende.append("svg:rect")
+			.attr("width","300px")
+			.attr("height","350px")
+			.style("fill","#aaa");
+
+
+
+
+		// position des elements dans le bloc legende
+		var positionX = 20;
+		var positionY = 40;
+
+
+		//titre de la légende
+		legende.append("svg:text")
+			.attr("class", "legendeTitre")
+			.attr("x", positionX)
+			.attr("y", positionY)
 			.text(function(){
 				var titreLegende = "";
 				if(LANGUE == "FR"){ 
@@ -259,10 +267,8 @@ function setup()
 				}
 				return titreLegende;	
 			});
-		x = plusPct(x, 1);
-		y = plusPct(y, 2);
-				
 
+		//boucle Items de la légende
 		categories = [ [ "noPenalty", 				"none",						 	"aucune" ], 
 						[ "diffamation", 			"defamation of religions",		"diffamation des religions" ],
 						[ "blaspheme", 				"blasphemy",					"blasphème" ],
@@ -273,14 +279,38 @@ function setup()
 						[ "allPenalties", 			"all penalties",				"toutes les pénalisations" ] ];
 	
 
+		//creation du groupe d'items
+		//var items = legende.append("svg:g")
+
+
 		categories.forEach(function(d, i){
-			legende.append("svg:rect")
-				.attr("width", "1%").attr("height", "1%")
-				.attr("x", x).attr("y", y)
-				.attr("class", d[0]);
-			legende.append("svg:text").attr("class", "legendeTexte")
-				.attr("x", plusPct(x, 2)).attr("y", plusPct(y, 1))
-				.attr("name", d[0])
+
+			var marge = 18;
+
+			// création du groupe de l'item
+			var item = legende.append("svg:g")
+							.attr("id","item"+i)
+							.attr("name", d[0])
+							.on("click", function(){ clickLegende(this); })
+							.on("mouseover", function(){ 
+								d3.select("#item"+i).style("opacity", "0.8").style("cursor", "pointer"); 
+							})
+							.on("mouseout", function(){ 
+								d3.select("#item"+i).style("opacity", "1").style("cursor", "arrow"); ; 
+							})
+			
+
+			//fond du bouton
+			var fond = item.append("svg:rect").style("fill","#fff").attr("id", "fond"+i);
+
+			//carré de couleur de la légende
+			var pastilleCouleur = item.append("svg:rect").attr("class", d[0]).attr("id", "pastille"+i);
+
+
+
+			//texte de la légende
+			var txtLegende = item.append("svg:text").attr("class", "legendeTexte")
+				.attr("id", "text"+i)
 				.text(function(){
 					var texte = "";
 					if(LANGUE == "FR")
@@ -291,13 +321,48 @@ function setup()
 					}
 					return texte;
 				})
-				.on("click", function(d){ clickLegende(this); });
-			y = plusPct(y, 4);
-		});
-		
-		// texte mort en derniere ligne
-		legende.append("svg:text").attr("class", "legendeTexte")
-			.attr("x", plusPct(x, 2)).attr("y", plusPct(y, 1))
+				
+
+			var txt = document.getElementById("text"+i).getBBox();
+
+			txtLegende.attr("x",txt.height+marge*1.5)
+				.attr("y",marge*1.2)
+				
+
+			//taille et position des fonds
+			fond.attr("width", txt.width+marge*2+txt.height).attr("height", txt.height+marge);
+			pastilleCouleur.attr("width", txt.height+marge).attr("height", txt.height+marge);
+			
+			item.attr("transform", "translate("+positionX+","+(positionY*1.5+i*(txt.height+marge*1.5))+")");
+
+
+
+			// positionY += 20
+
+			// item.attr("transform","translate("++")")
+
+
+
+		})
+
+		var i = categories.length
+
+		// création de la légende pour le picto peine de mort
+		var item = legende.append("svg:g")
+							.attr("id","item"+j)
+							.attr("name", "passible de mort")
+							.on("click", function(){ clickLegende(this); })
+							.on("mouseover", function(){ 
+								d3.select("#item"+j).style("opacity", "0.8").style("cursor", "pointer"); 
+							})
+							.on("mouseout", function(){ 
+								d3.select("#item"+j).style("opacity", "1").style("cursor", "arrow"); ; 
+							})
+
+
+
+		item.append("svg:text").attr("class", "legendeTexte")
+			.attr("x", (x+2)+"%").attr("y", (y+1)+"%")
 			.attr("title", "passible de mort")
 			.attr("name", "passible de mort")
 			.text(function(){
@@ -310,7 +375,153 @@ function setup()
 					}
 					return texte;
 			})
-			.on("click", function(d){ clickLegende(this); });
+			.on("click", function(){ clickLegende(this); });
+
+
+		// picto legende
+		pictoMortLegende = legende.append("svg:path")
+			.attr("d", forme)
+			.attr("transform","scale(0.01)")
+			.style("fill", "#fff")
+			.style("stroke", "#000");
+		
+
+
+
+		//replaement de la legende et re-dimmensionnement
+
+		
+
+
+
+		
+	}
+
+
+		
+	function _dessinerLegende()
+	{
+
+		var x = 1;
+		var y = 20;
+		var legende = svg.append("svg:g").attr("class", "legende");
+
+		legende.append("svg:text").attr("class", "legendeTitre")
+			.attr("x", (x+1)+"%").attr("y", y+"%")
+
+			.text(function(){
+				var titreLegende = "";
+				if(LANGUE == "FR"){ 
+					titreLegende = "Pénalisation par la loi";
+				} else {
+					titreLegende = "Penalize by law";
+				}
+				return titreLegende;	
+			});
+		x += 1;
+		y += 2;
+				
+		categories = [ [ "noPenalty", 				"none",						 	"aucune" ], 
+						[ "diffamation", 			"defamation of religions",		"diffamation des religions" ],
+						[ "blaspheme", 				"blasphemy",					"blasphème" ],
+						[ "apostasie", 				"apostasy*",					"apostasie*" ],  
+						[ "blasphemeDiffamation", 	"blasphemy + defamation",		"blasphème + diffamation" ],
+						[ "apostasieDiffamation", 	"apostasy + defamation",		"apostasie + diffamation" ],  
+						[ "blasphemeApostasie", 	"blasphemy + apostasy",			"blasphème + apostasie" ], 
+						[ "allPenalties", 			"all penalties",				"toutes les pénalisations" ] ];
+	
+
+		categories.forEach(function(d, i){
+
+			var bouton = legende.append("svg:g").attr("class", "bouton").attr("id", i)
+				.on("mouseover", function(){ hoverLegende(this); })
+				.on("mouseout", function(){ outLegende(this); });
+
+
+			// BOUTON
+
+			var fond = bouton.append("svg:rect")
+				.attr("id", "btn1"+i)
+				.attr("x", (x-0.2)+"%").attr("y", (y-1.0)+"%")
+				.style("fill", "#fff");
+
+			// TEXTE
+			bouton.append("svg:text").attr("class", "legendeTexte")
+				.attr("x", (x+2)+"%").attr("y", (y+1)+"%")
+				.attr("id", "text"+i)
+				.attr("name", d[0])
+				.text(function(){
+					var texte = "";
+					if(LANGUE == "FR")
+					{
+						texte = d[2];
+					} else {
+						texte = d[1];
+					}
+					return texte;
+				})
+				.on("click", function(){ clickLegende(this); });
+
+			
+
+
+			var texte = document.getElementById("text"+i);
+			var largeurTexte = texte.getBBox().width;
+			var hauteurTexte = texte.getBBox().height;
+			var xTexte = texte.getBBox().x;
+			var yTexte = texte.getBBox().y;
+
+			console.log( xTexte + " / " + yTexte)
+
+			fond.attr("width", (largeurTexte+60)+"px");
+			fond.attr("height", (hauteurTexte+5)+"px");
+
+			// CARRE COULEUR
+			bouton.append("svg:rect")
+				.attr("width", "10px")
+				.attr("height", hauteurTexte+10+"px")
+				.attr("x", xTexte+"px")
+				.attr("y", yTexte+"px")
+				.attr("class", d[0]);
+
+			y += 4;
+		});
+		
+
+
+		// texte mort en derniere ligne
+		var bouton = legende.append("svg:g").attr("class", "bouton").attr("id", i)
+				.on("mouseover", function(){ hoverLegende(this); })
+				.on("mouseout", function(){ outLegende(this); });
+
+		var bouton2 = bouton.append("svg:rect")
+				.attr("id", "btn2"+i)
+				.attr("width", "10%").attr("height", "2.4%")
+				.attr("x", (x+1.6)+"%").attr("y", (y-0.8)+"%")
+				.style("fill", "#ccc");
+
+		var bouton1 = bouton.append("svg:rect")
+				.attr("id", "btn1"+i)
+				.attr("height", "2.4%")
+				.attr("x", (x+1.4)+"%").attr("y", (y-1.0)+"%")
+				.style("fill", "#fff");
+
+		legende.append("svg:text").attr("class", "legendeTexte")
+			.attr("x", (x+2)+"%").attr("y", (y+1)+"%")
+			.attr("title", "passible de mort")
+			.attr("name", "passible de mort")
+			.text(function(){
+					var texte = "";
+					if(LANGUE == "FR")
+					{
+						texte = "passible de mort";
+					} else {
+						texte = "punishable by death";
+					}
+					return texte;
+			})
+			.on("click", function(){ clickLegende(this); });
+
 
 		// picto legende
 		pictoMortLegende = legende.append("svg:path")
@@ -358,13 +569,30 @@ function setup()
 	
 	
 	
-	
 	/////////////////////////////////////
 	// INTERACTION /////////////////////
 	///////////////////////////////////
 	
-	svg.on("click", clicSvg);
+	function hoverLegende(d)
+	{
+		var btn1 = d3.select("#btn1"+d.id);
+		var text = d3.select("#text"+d.id);
+		btn1[0][0].style.fill = "#888";
+		text[0][0].style.fill = "#fff";
+	}
 	
+	
+	function outLegende(d)
+	{
+		var btn1 = d3.select("#btn1"+d.id);
+		var text = d3.select("#text"+d.id);
+		btn1[0][0].style.fill = "#fff";
+		text[0][0].style.fill = "#555";
+	}
+	
+
+
+
 	function hoverPays(d)
 	{
 
@@ -388,7 +616,7 @@ function setup()
 	
 	
 	
-	
+	svg.on("click", clicSvg);
 	
 	function clickPays(d)
 	{ 	
@@ -721,7 +949,7 @@ function setup()
 
 
 
-	
+		
 	function plusPct(cible, ajout)
 	{
 		
@@ -901,7 +1129,10 @@ function setup()
 	
 	
 	
-	
+
+
+
+
 	
 
 
@@ -929,6 +1160,8 @@ function setup()
 	
 	    width = window.innerWidth; 
 		height = window.innerHeight;
+
+		console.log(width);
 
 	    // update projection
 	    projection

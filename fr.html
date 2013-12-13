@@ -5,7 +5,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-		<script type="text/javascript" src="/squelettes/lib/js/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="http://rsf.org/squelettes/lib/js/jquery-1.4.2.min.js"></script>
 		<script type="text/javascript" src="javascript/d3.js"></script>
 		<script type="text/javascript" src="javascript/d3geo.js"></script>
 		<script type="text/javascript" src="javascript/queue.js"></script>
@@ -180,6 +180,12 @@
 					jQuery("#more").slideDown(500);
 					jQuery(this).hide(0);
 				})
+
+			jQuery("#id0").click(function(){
+				jQuery(this).fadeOut(100)
+			}, function(){
+				jQuery(this).fadeIn(100)
+			});
 
 				
 
