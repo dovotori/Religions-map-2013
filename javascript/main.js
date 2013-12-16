@@ -322,8 +322,8 @@ function setup()
 			
 
 			//fond du bouton
+			var fondOmbre = item.append("svg:rect").style("fill","rgba(0,0,0,0.15)").attr("x",-1).attr("y",1);;
 			var fond = item.append("svg:rect").style("fill","#fff").attr("id", "fond"+j);
-
 
 			
 			//carré de couleur de la légende
@@ -354,6 +354,7 @@ function setup()
 
 			//taille et position des fonds
 			fond.attr("width", txt.width+marge*2+txt.height).attr("height", txt.height+marge);
+			fondOmbre.attr("width", txt.width+marge*2+txt.height).attr("height", txt.height+marge);
 			
 			
 			pastilleCouleur.attr("width", txt.height+marge).attr("height", txt.height+marge);
@@ -663,8 +664,6 @@ function setup()
 			} else if(!paysTrouve){
 				infosTitre[0].text(paysClique.properties.name);
 			}
-
-
 
 		} else {
 			
@@ -1029,19 +1028,32 @@ function setup()
 		afficherPictosMortCarte();
 
 
-		var scale = 1;
-		if(width < 500)
-		{
-			scale = 0.5;
-		}
+
+		var largeurSVG = document.getElementById("svgCarte").getAttribute("width");
+		var largeurLegende = document.getElementById("legende").getBBox().width;
+
+		console.log(largeurLegende)
+
+		scale_max = 1.7;
+		scale_min = 0.5;
+
+		var scale = largeurSVG*0.001;
+
+		scale = Math.min(scale, scale_max);
+
+		scale = Math.max(scale, scale_min);
+		
 
 		// placement de la legende
 		var hauteurSVG = document.getElementById("svgCarte").getAttribute("height");
 		var hauteurLegende = document.getElementById("legende").getBBox().height;
-		var bonneHauteur = hauteurSVG - (hauteurLegende+100);
+		var bonneHauteur = hauteurSVG - (hauteurLegende*scale+100);
+
+		d3.select("#legende").attr("transform", "translate(0, "+bonneHauteur+")scale("+scale+")");
+
 		
 
-		d3.select("#legende").attr("transform", "translate(0, "+bonneHauteur+") scale("+scale+")");
+		
 		
 		posX = width*0.01*2;
 		posY = width*0.01*6;
