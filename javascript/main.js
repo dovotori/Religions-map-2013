@@ -841,15 +841,25 @@ function setup()
 		var titreLegende = infosPlus.append("svg:text")
 			.attr("class", "infosTexte")
 			.attr("x", marge).attr("y", 110)
-			.text("Pourcentages du nombre de croyants par religions");
+			.text(function(){
+				if(LANGUE=="FR"){
+					return "Répartition des croyants";
+				}else{
+					return "Breakdown of adherents";
+				}
+			});
 		var source = infosPlus.append("svg:text")
 			.attr("class", "infosSource")
 			.attr("x", marge).attr("y", infosHauteur-marge-12)
-			.text("sources: Zeev Maoz and Errol A. Henderson. “The World Religion Dataset, 1945-2010:");
+			.text("sources: Zeev Maoz and Errol A. Henderson. “The World Religion Dataset, 1945-2010:")
+			.on("click", function(){ window.location.href="http://www.correlatesofwar.org/COW2%20Data/Religion/Religion.htm";  });
 		var source2 = infosPlus.append("svg:text")
 			.attr("class", "infosSource")
 			.attr("x", marge).attr("y", infosHauteur-marge)
-			.text("Logic, Estimates, and trends.” International Interactions, 39(3)");
+			.text("Logic, Estimates, and trends.” International Interactions, 39(3)")
+			.on("click", function(){ window.location.href="http://www.correlatesofwar.org/COW2%20Data/Religion/Religion.htm";  });
+
+
 
 
 		infosTitre[0].attr("x", marge).attr("y", marge*2); 
