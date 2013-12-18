@@ -509,8 +509,8 @@ function setup()
 			
 		carte.transition()
 	     		.duration(750)
-	     		.attr("transform", "translate(50%, 50%)scale(" + 1 + ")");
-	    
+	     		.attr("transform", "scale(" + 1 + ")");
+
 	    infosFond.transition()
 	    	.duration(750)
 	    	.attr("width", "0").attr("height", "0");
@@ -596,6 +596,63 @@ function setup()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+	var infos = svg.append("svg:g").attr("id", "infos");
+	var infosFond = infos.append("svg:rect").attr("id", "infosFond").attr("width", "0").attr("height", "0");
+	var infosTitre = [3];
+	infosTitre[0] = infos.append("svg:text").attr("class", "infosTitre");
+	infosTitre[1] = infos.append("svg:text").attr("class", "infosPenalisations");
+	var infosPlus = infos.append("svg:g").attr("class", "infosPlus");
+	var infosLargeur = 500, infosHauteur = 550;
+	
+	var nbCat = 16;
+	var infosTexte = [nbCat];
+	for(var i = 0; i < nbCat; i++){
+		infosTexte[i] = infos.append("svg:text").attr("class", "infosTexte");
+	}
+	var infosValeurs = [3]; 
+	infosValeurs[0] = []; infosValeurs[1] = []; infosValeurs[2] = [];
+	var cow = ""; var isInformed;
+	var pie = d3.layout.pie().sort(null).value(function(d) { return d; });    
+	var arc = d3.svg.arc().outerRadius(100).innerRadius(50);
+	var donut  = infos.selectAll(".arc");
+	var legendeReligionsCarres = [nbCat];
+	var legendeReligionsTextes = [nbCat];
+	for(var i = 0; i < nbCat; i++)
+	{
+		legendeReligionsCarres[i] = infos.append("svg:rect");
+		legendeReligionsTextes[i] = infos.append("svg:text");
+	}
+
+
+
+
+
+
 	
 	function afficherInfos()
 	{
@@ -628,36 +685,9 @@ function setup()
 		 	.defer(d3.csv ,	"data/listeCapitalesPosition.csv", 	function(d){ dessinerCapitales(d); })
 		 	.awaitAll(dessinerInfos);
 		
-
-		/*
-		queue()
-			.defer(lireCsv, "data/pays-fr-en-de-es-iso2-iso3-id.csv")
-			.defer(lireCsv,  "data/couleursReligions.csv")
-			.defer(lireCsv, 	"data/COWstate.csv")
-			.defer(lireCsv, 	"data/WRPstate2010.csv")
-			.defer(lireCsv,	"data/listeCapitalesPosition.csv")
-			.awaitAll(go);
-		*/
-
-
-		
-
-
-
 	}
 	
-	/*
-	function go(error, results)
-	{
-		alert(results[0]);
-		//recupererTitre(results[0]);
-		//recupererCouleurReligion(results[1]);
-		//traiterNoms(results[2]);
-		//traiterReligions(results[3]);
-		//dessinerCapitalesresults[4]);
-		//dessinerInfos();
-	}
-	*/
+	
 
 
 
@@ -723,55 +753,59 @@ function setup()
 		if(cow == d.name)
 		{
 
-			var pcts = [ d.chrstcatpct, d.chrstprotpct, d.chrstorthpct, d.chrstangpct, d.islmsunpct, d.islmshipct,
+			/*var pcts = [ d.chrstcatpct, d.chrstprotpct, d.chrstorthpct, d.chrstangpct, d.islmsunpct, d.islmshipct,
 			d.judgenpct, d.budgenpct, d.taogenpct, d.hindgenpct, d.confgenpct, d.anmgenpct ];
-
 			pcts.sort();
-			pcts.reverse();
-
-
-
-
+			pcts.reverse();*/
 
 
 			isInformed = true;
+
 			infosValeurs[0][0] = d.chrstcatpct;
 			infosValeurs[0][1] = d.chrstprotpct;
 			infosValeurs[0][2] = d.chrstorthpct;
 			infosValeurs[0][3] = d.chrstangpct;
-			infosValeurs[0][4] = d.islmsunpct;
-			infosValeurs[0][5] = d.islmshipct;
-			infosValeurs[0][6] = d.judgenpct;
-			infosValeurs[0][7] = d.budgenpct;
-			infosValeurs[0][8] = d.taogenpct;
+			infosValeurs[0][4] = d.chrstothrpct;
+			infosValeurs[0][5] = d.islmsunpct;
+			infosValeurs[0][6] = d.islmshipct;
+			infosValeurs[0][7] = d.judgenpct;
+			infosValeurs[0][8] = d.anmgenpct;
+			infosValeurs[0][9] = d.budgenpct;
+			infosValeurs[0][10] = d.taogenpct;
+			infosValeurs[0][11] = d.hindgenpct;
+			infosValeurs[0][12] = d.confgenpct;
+			infosValeurs[0][13] = d.syncgenpct;
+			infosValeurs[0][14] = d.nonreligpct;
+			
 
-			// d.hindgenpct;	// hindou
-			// d.sikhgenpct;	// sikh
-			// d.confgenpct;	// confusianism
-			// d.anmgenpct;		// animist
+			var total = 0;
+			var nbElemSansDernier = nbCat-1;
+
+			for(var i = 0; i < nbElemSansDernier; i++)
+			{
+
+				total += parseFloat(infosValeurs[0][i]);
+
+				infosValeurs[1][i] = Math.round(infosValeurs[0][i]*100*100)/100+"% "+infosValeurs[1][i];
 
 
+			}
+			infosValeurs[0][nbElemSansDernier] = 1-total;
+			infosValeurs[1][nbElemSansDernier] = Math.round(infosValeurs[0][nbElemSansDernier]*100*100)/100+"% "+infosValeurs[1][nbElemSansDernier];
 
 			
-			var total = parseFloat(infosValeurs[0][0])+parseFloat(infosValeurs[0][1])
-				+parseFloat(infosValeurs[0][2])+parseFloat(infosValeurs[0][3])+parseFloat(infosValeurs[0][4])
-				+parseFloat(infosValeurs[0][5])+parseFloat(infosValeurs[0][6])
-				+parseFloat(infosValeurs[0][7])+parseFloat(infosValeurs[0][8]);
-			infosValeurs[0][9] = 1-total;
+
+			// verification du pourcentage
+			var verif = 0.0;
+			for(var i = 0; i < nbCat; i++)
+			{
+				verif += parseFloat(infosValeurs[0][i]);
+			}
+			console.log(verif);			
 
 
-			infosValeurs[1][0] = Math.round(infosValeurs[0][0]*100*10)/10+"% "+infosValeurs[1][0];
-			infosValeurs[1][1] = Math.round(infosValeurs[0][1]*100*10)/10+"% "+infosValeurs[1][1];
-			infosValeurs[1][2] = Math.round(infosValeurs[0][2]*100*10)/10+"% "+infosValeurs[1][2];
-			infosValeurs[1][3] = Math.round(infosValeurs[0][3]*100*10)/10+"% "+infosValeurs[1][3];
-			infosValeurs[1][4] = Math.round(infosValeurs[0][4]*100*10)/10+"% "+infosValeurs[1][4];
-			infosValeurs[1][5] = Math.round(infosValeurs[0][5]*100*10)/10+"% "+infosValeurs[1][5];
-			infosValeurs[1][6] = Math.round(infosValeurs[0][6]*100*10)/10+"% "+infosValeurs[1][6];
-			infosValeurs[1][7] = Math.round(infosValeurs[0][7]*100*10)/10+"% "+infosValeurs[1][7];
-			infosValeurs[1][8] = Math.round(infosValeurs[0][8]*100*10)/10+"% "+infosValeurs[1][8];
-			infosValeurs[1][9] = Math.round(infosValeurs[0][9]*100*10)/10+"% "+infosValeurs[1][9];
-			
 		}
+
 	}
 	
 	
@@ -785,45 +819,6 @@ function setup()
 
 
 
-
-
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-	var infos = svg.append("svg:g").attr("id", "infos");
-	var infosFond = infos.append("svg:rect").attr("id", "infosFond").attr("width", "0").attr("height", "0");
-	var infosTitre = [3];
-	infosTitre[0] = infos.append("svg:text").attr("class", "infosTitre");
-	infosTitre[1] = infos.append("svg:text").attr("class", "infosPenalisations");
-	var infosPlus = infos.append("svg:g").attr("class", "infosPlus");
-	var infosLargeur = 500, infosHauteur = 460;
-	
-	var nbCat = 10;
-	var infosTexte = [nbCat];
-	for(var i = 0; i < nbCat; i++){
-		infosTexte[i] = infos.append("svg:text").attr("class", "infosTexte");
-	}
-	var infosValeurs = [3]; 
-	infosValeurs[0] = []; infosValeurs[1] = []; infosValeurs[2] = [];
-	var cow = ""; var isInformed;
-	var pie = d3.layout.pie().sort(null).value(function(d) { return d; });    
-	var arc = d3.svg.arc().outerRadius(100).innerRadius(50);
-	var donut  = infos.selectAll(".arc");
-	var legendeReligionsCarres = [nbCat];
-	var legendeReligionsTextes = [nbCat];
-	for(var i = 0; i < nbCat; i++)
-	{
-		legendeReligionsCarres[i] = infos.append("svg:rect");
-		legendeReligionsTextes[i] = infos.append("svg:text");
-	}
 
 
 
@@ -840,20 +835,20 @@ function setup()
 		var ligne = infosPlus.append("svg:line").style("stroke", "#fff")
 			.attr("x1", marge).attr("y1", 80)
 			.attr("x2", 480).attr("y2", 80);
-		var ligne = infosPlus.append("svg:line").style("stroke", "#fff")
-			.attr("x1", marge).attr("y1", 400)
-			.attr("x2", 480).attr("y2", 400);
+		var ligne2 = infosPlus.append("svg:line").style("stroke", "#fff")
+			.attr("x1", marge).attr("y1", infosHauteur-50)
+			.attr("x2", 480).attr("y2", infosHauteur-50);
 		var titreLegende = infosPlus.append("svg:text")
 			.attr("class", "infosTexte")
 			.attr("x", marge).attr("y", 110)
 			.text("Pourcentages du nombre de croyants par religions");
 		var source = infosPlus.append("svg:text")
 			.attr("class", "infosSource")
-			.attr("x", marge).attr("y", 460-marge-12)
+			.attr("x", marge).attr("y", infosHauteur-marge-12)
 			.text("sources: Zeev Maoz and Errol A. Henderson. “The World Religion Dataset, 1945-2010:");
 		var source2 = infosPlus.append("svg:text")
 			.attr("class", "infosSource")
-			.attr("x", marge).attr("y", 460-marge)
+			.attr("x", marge).attr("y", infosHauteur-marge)
 			.text("Logic, Estimates, and trends.” International Interactions, 39(3)");
 
 
@@ -873,6 +868,7 @@ function setup()
 				.enter().append("g")
 			    .attr("class", "arc");
 
+			var cpt = 0;
 			donut.append("path")
 			    .attr("d", arc)
 			    .style("fill", function(d, i){ return infosValeurs[2][i] })
@@ -880,21 +876,24 @@ function setup()
 			    .attr("transform", "translate("+150+", "+260+")")
 			    .each(function(d, i) { 
 
-			    	// pastilles legendes 
-			    	legendeReligionsCarres[i].attr("width", "10").attr("height", "10")
-			    		.attr("x", 320).attr("y", 150+(i*marge*1.2))
-			    		.style("fill", infosValeurs[2][i]);
+			    	if(infosValeurs[0][i] != 0)
+			    	{
+				    	// pastilles legendes 
+				    	legendeReligionsCarres[i].attr("width", "10").attr("height", "10")
+				    		.attr("x", 300).attr("y", 140+(cpt*marge*1.2))
+				    		.style("fill", infosValeurs[2][i]);
 
-			    	// textes legendes
-			    	legendeReligionsTextes[i].attr("x", 340).attr("y", 160+(i*marge*1.2))
-			    		.text(infosValeurs[1][i]);
-	
+				    	// textes legendes
+				    	legendeReligionsTextes[i].attr("x", 320).attr("y", 150+(cpt*marge*1.2))
+				    		.text(infosValeurs[1][i]);
+				    	cpt++;
+					}
 			    });	
 
 		} else if(!isInformed){
 	
 			legendeReligionsTextes[0].attr("class", "infosTexte")
-				.attr("x", marge).attr("y", marge*4)
+				.attr("x", marge).attr("y", 140)
 			    .text(function(d){
 			    	var texte = "";
 			    	if(LANGUE == "FR")
@@ -1147,7 +1146,7 @@ function setup()
 		var largeurLegende = document.getElementById("legende").getBBox().width;
 
 		// placement de la legende
-		var scale_max = 1.4;
+		var scale_max = 1.2;
 		var scale_min = 0.5;
 		var scale = largeurSVG*0.001;
 		scale = Math.min(scale, scale_max);
@@ -1163,8 +1162,8 @@ function setup()
 		scale_min = 0.6;
 		scale = Math.min(scale, scale_max);
 		scale = Math.max(scale, scale_min);
-		var bonneHauteur = hauteurSVG - (infosHauteur*scale+100);
-		d3.select("#infos").attr("transform", "translate("+Math.floor((width/2)+(width/10))+", "+Math.floor(height/2)+")scale("+scale+")");
+		var bonneHauteur = Math.floor(hauteurSVG / 2) - (infosHauteur/2);
+		d3.select("#infos").attr("transform", "translate("+Math.floor((width/2)+(width/10))+", "+bonneHauteur+")scale("+scale+")");
 		
 
 		
