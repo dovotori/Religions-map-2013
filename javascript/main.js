@@ -62,8 +62,6 @@ function setup()
 	var paysPenaliseParMort = [];
 	var pictosMortCarte = [];
  	var forme = "M24.869 -17.798 L17.798 -24.869 L0 -7.071 L-17.797 -24.869 L-24.869 -17.798 L-7.071 0 L-24.869 17.798 L-17.798 24.869 L0 7.071 L17.798 24.869 L24.869 17.798 L7.071 0Z";
-	
-	
 
 
 
@@ -87,6 +85,7 @@ function setup()
 		dessinerLegende();			
 		lireHashDemarrage();
 		resize();
+
 	}
 
 
@@ -415,10 +414,12 @@ function setup()
 	
 	function outLegende(d)
 	{
+
 		var btn1 = d3.select("#btn1"+d.id);
 		var text = d3.select("#text"+d.id);
 		btn1[0][0].style.fill = "#fff";
 		text[0][0].style.fill = "#555";
+		
 	}
 	
 
@@ -1085,7 +1086,8 @@ function setup()
 			pic.remove();
 		});
 
-		paysPenaliseParMort.forEach(function(d, i){
+		paysPenaliseParMort.forEach(function(d, i)
+		{
 			var centroid = path.centroid(d);
 			pictosMortCarte[i] = carte.append("svg:g")
 				.attr("transform", "translate("+centroid[0]+", "+centroid[1]+") scale("+width/10000+")")
@@ -1093,8 +1095,7 @@ function setup()
 				.attr("d", forme)
 				.style("stroke","#000000")
 				.style("stroke-width","2")
-				.style("fill","#ffffff");
-				
+				.style("fill","#ffffff");			
 		});
 
 	}
